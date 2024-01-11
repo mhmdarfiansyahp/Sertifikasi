@@ -14,7 +14,7 @@
             <a asp-controller="Prodi" class="btn btn-primary" asp-action="Create" title="Create Program Studi">+ Create Program Studi</a>
             <br />
             <br />
-            <table class="table table-striped mx-auto text-center">
+            <table class="table table-hover table-bordered table-condensed table-striped mx-auto text-center">
                 <thead>
                     <tr>
                         <th scope="col" style="text-align: center;">No.</th>
@@ -51,7 +51,6 @@
                         '<td>' +
                         '<a class="btn btn-sm btn-primary" href="/Prodi/Update?id=' + item.idProdi + '"><i class="fas fa-duotone fa-pen-to-square"></i></a>' + 
                         '<span style="margin-right: 10px;"></span>' +
-                        '<button class="btn btn-sm btn-danger" value="' + item.idProdi + '" onclick="hapus(this.value)"><i class="fas fa-regular fa-trash-can"></i></button>' +
                         '</td>' +
                         '</tr>';
                     $('#tbody').append(newRow);

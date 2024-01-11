@@ -10,8 +10,9 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
-                    <label class="control-label">Nama Prodi</label>
+                    <label class="control-label">Nama Prodi <span style="color: red;">*</span></label>
                     <input class="form-control" name="namaProdi" id="namaProdi" />
+                    <span id="namaProdiError" class="text-danger"></span>
                 </div>
                 <br />
                 <div class="form-group">
@@ -34,7 +35,6 @@
         }
 
         // Clear the error message if validation passes
-        document.getElementById("namaProdiError").innerText = '';
 
         var hostname = "http://localhost:5268/";
         var url = hostname + "InsertProdi";
@@ -42,6 +42,7 @@
 
         var input = {
             namaProdi: namap,
+            status: "Aktif",
         };
 
         var data = JSON.stringify(input);

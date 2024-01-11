@@ -1,0 +1,160 @@
+﻿@{
+    ViewData["Title"] = "Detail Sertifikasi";
+}
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="idsertifikasi" class="control-label">Nama Sertifikasi <span style="color: red;">*</span></label>
+                    <select name="idsertifikasi" id="idsertifikasi" class="form-control" required>
+                        <option selected disabled>-- Pilih Nama Sertifikasi --</option>
+                    </select>
+                    <span id="idsertifikasiError" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Tanggal Sertifikasi <span style="color: red;">*</span></label>
+                    <input class="form-control" type="date" name="tanggal" id="tanggal" />
+                    <span id="tanggalError" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Lembaga Sertifikasi <span style="color: red;">*</span></label>
+                    <input class="form-control" name="lembagaserti" id="lembagaserti" required />
+                    <span id="lembagaSerti" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Level Sertifikasi <span style="color: red;">*</span></label>
+                    <input class="form-control" name="levelserti" id="levelserti" required />
+                    <span id="levelSerti" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Level KKNI <span style="color: red;">*</span></label>
+                    <input class="form-control" type="number" name="levelkkni" id="levelkkni" required />
+                    <span id="levelkkni" class="text-danger"></span>
+                </div>
+
+                <br />
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" onclick="simpan()">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    loadProdi();
+
+    function loadProdi() {
+        var hostname = "http://localhost:5268/";
+        var url = hostname + "GetAllSertifikasi";
+        var method = "GET";
+
+        $.ajax({
+            url: url,
+            method: method,
+            contentType: "application/json",
+            success: function (data) {
+                var list = data.data;
+                list.forEach(function (item) {
+                    var newOption = '<option value="' + item.idsertifikat + '">' + item.namaSerti + "</option>";
+                    $("#idsertifikasi").append(newOption);
+                });
+            },
+        });
+    }
+
+    function simpan() {
+        var idser = document.getElementById("idsertifikasi").value;
+        var tanggal = document.getElementById("tanggal").value;
+        var lembaga = document.getElementById("lembagaserti").value;
+        var level = document.getElementById("levelserti").value;
+        var levelk = document.getElementById("levelkkni").value;
+
+        document.getElementById("idsertifikasiError").innerText = '';
+        document.getElementById("lembagaSerti").innerText = '';
+        document.getElementById("levelSerti").innerText = '';
+        document.getElementById("levelkkni").innerText = '';
+        document.getElementById("tanggalError").innerText = '';  // New line for date validation
+
+        var isValid = true;
+
+        if (!lembaga.trim()) {
+            // Display error message for empty certification name
+            document.getElementById("lembagaSerti").innerText = 'Lembaga Sertifikasi harus diisi.';
+            isValid = false;
+        }
+
+        if (idser === "-- Pilih Nama Sertifikasi --") {
+            // Display error message for not selecting a program
+            document.getElementById("idsertifikasiError").innerText = 'Nama Sertifikasi harus dipilih.';
+            isValid = false;
+        }
+
+        if (!level.trim()) {
+            // Display error message for empty certification name
+            document.getElementById("levelSerti").innerText = 'Level Sertifikasi harus diisi.';
+            isValid = false;
+        }
+
+        if (!levelk.trim()) {
+            // Display error message for empty certification name
+            document.getElementById("levelkkni").innerText = 'Level KKNI harus diisi.';
+            isValid = false;
+        }
+
+        if (!tanggal.trim()) {
+            // Display error message for empty date
+            document.getElementById("tanggalError").innerText = 'Tanggal Sertifikasi harus diisi.';
+            isValid = false;
+        }
+
+        if (!isValid) {
+            // Stop further processing if there are validation errors
+            return;
+        }
+
+        var hostname = "http://localhost:5268/";
+        var url = hostname + "InsertDetailSertifikasi";
+        var method = "POST";
+
+        var input = {
+            idsertifikasi: idser,
+            tanggal: tanggal,
+            lembaga: lembaga,
+            level:level,
+            levelKKNI: levelk,
+        };
+
+        var data = JSON.stringify(input);
+
+        $.ajax({
+            url: url,
+            method: method,
+            data: data,
+            contentType: "application/json",
+            success: function (data) {
+                // Menampilkan SweetAlert setelah data berhasil disimpan
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'Data berhasil ditambahkan!',
+                }).then((result) => {
+                    // Redirect ke halaman Index setelah menekan OK di SweetAlert
+                    if (result.isConfirmed) {
+                        window.location.href = "/DetailSertifikasi/Index";
+                    }
+                });
+            },
+            error: function (error) {
+                console.error('Error:', error);
+                // Tambahkan penanganan kesalahan jika diperlukan
+            }
+        });
+    }
+</script>

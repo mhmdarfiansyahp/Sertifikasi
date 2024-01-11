@@ -14,13 +14,12 @@
             <a asp-controller="Sertifikasi" class="btn btn-primary" asp-action="Create" title="Create Sertifikasi">+ Create Sertifikasi</a>
             <br />
             <br />
-            <table class="table table-striped mx-auto text-center">
+            <table class="table table-hover table-bordered table-condensed table-striped mx-auto text-center">
                 <thead>
                     <tr>
                         <th scope="col" style="text-align: center;">No.</th>
-                        <th scope="col" style="text-align: center;">Nama Prodi</th>
                         <th scope="col" style="text-align: center;">Nama Sertifikasi</th>
-                        <th scope="col" style="text-align: center;">Tanggal Sertifikasi</th>
+                        <th scope="col" style="text-align: center;">Nama Prodi</th>
                         <th scope="col" style="text-align: center;">Action</th>
                     </tr>
                 </thead>
@@ -47,18 +46,10 @@
                 var rowNumber = 1;
 
                 list.forEach(function (item) {
-                    // Format the date using toLocaleDateString()
-                    var options = { year: 'numeric', month: 'long', day: 'numeric' };
-
-                    var formatter = new Intl.DateTimeFormat('id-ID', options);
-
-                    var formattedTanggal = formatter.format(new Date(item.tanggal));
-
                     var newRow = '<tr>' +
                         '<td>' + rowNumber++ + '</td>' +
-                        '<td>' + item.namaProdi + '</td>' +
                         '<td>' + item.namaSerti + '</td>' +
-                        '<td>' + formattedTanggal + '</td>' +
+                        '<td>' + item.namaProdi + '</td>' +
                         '<td>' +
                         '<a class="btn btn-sm btn-primary" href="/Sertifikasi/Update?id=' + item.idsertifikat + '"><i class="fas fa-light fa-pen-to-square"></i></a>' +
                         '<span style="margin-right: 10px;"></span>' +

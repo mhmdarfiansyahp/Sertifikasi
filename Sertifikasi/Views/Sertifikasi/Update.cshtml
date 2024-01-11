@@ -9,18 +9,14 @@
     <div class="form-group">
         <input type="hidden" name="idSerti" id="idSerti" value="@ViewBag.Id" />
         <div class="form-group">
+            <label class="control-label">Nama Sertifikasi</label>
+            <input class="form-control" name="namaserti" id="namaserti" />
+        </div>
+        <div class="form-group">
             <label for="idprodi" class="control-label">Program Studi</label>
             <select name="idprodi" id="idprodi" class="form-control" required>
                 <option value="">-- Pilih Program Studi --</option>
             </select>
-        </div>
-        <div class="form-group">
-                    <label class="control-label">Nama Sertifikasi</label>
-            <input class="form-control" name="namaserti" id="namaserti" />
-        </div>
-        <div class="form-group">
-            <label class="control-label">Tanggal Sertifikasi</label>
-            <input class="form-control" type="date" name="tanggal" id="tanggal" />
         </div>
     </div>
     <div class="form-group">
@@ -55,7 +51,6 @@
         var idserti = document.getElementById("idSerti");
         var idProdi = document.getElementById("idprodi");
         var namaSerti = document.getElementById("namaserti");
-        var tanggal = document.getElementById("tanggal");
 
         var hostname = "http://localhost:5268/";
         var url = hostname + "GetSertifikasi?id=" + idserti.value;
@@ -68,17 +63,17 @@
             success: function (data) {
                 var item = data.data;
 
-                var receivedDate = new Date(item.tanggal);
-                var formattedTanggal =
+                //var receivedDate = new Date(item.tanggal);
+                /*var formattedTanggal =
                     receivedDate.getFullYear() +
                     "-" +
                     ("0" + (receivedDate.getMonth() + 1)).slice(-2) +
                     "-" +
-                    ("0" + receivedDate.getDate()).slice(-2);
+                    ("0" + receivedDate.getDate()).slice(-2);*/
 
                 idProdi.value = item.idProdi;
                 namaSerti.value = item.namaSerti;
-                tanggal.value = formattedTanggal;
+                //tanggal.value = formattedTanggal;
             }
         });
     }
@@ -91,7 +86,6 @@
         var idserti = document.getElementById("idSerti").value;
         var idpro = document.getElementById("idprodi").value;
         var namaserti = document.getElementById("namaserti").value;
-        var tanggal = document.getElementById("tanggal").value;
 
         console.log(idserti);  // Corrected variable name
 
@@ -116,7 +110,6 @@
                     idsertifikat: idserti,
                     idProdi: idpro,
                     namaSerti: namaserti,
-                    tanggal: tanggal,
                 };
 
                 var data = JSON.stringify(input);

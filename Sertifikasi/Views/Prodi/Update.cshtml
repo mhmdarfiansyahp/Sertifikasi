@@ -12,6 +12,15 @@
         <input class="form-control" name="namaProdi" id="namaProdi" />
     </div>
     <div class="form-group">
+        <label for="status" class="control-label">Status Program Studi</label>
+        <select name="status" id="status" class="form-control" required>
+            <option selected disabled>-- Pilih Status --</option>
+            <option value="Aktif">Aktif</option>
+            <option value="Tidak Aktif">Tidak Aktif</option>
+        </select>
+    </div>
+
+    <div class="form-group">
         <button type="submit" class="btn btn-primary" onclick="simpan()">Simpan</button>
     </div>
 </div>
@@ -21,11 +30,13 @@
     loadData();
 
     function loadData() {
-        var idProdi = document.getElementById("idProdi");
-        var namaProdi = document.getElementById("namaProdi");
+        var idProdiElement = document.getElementById("idProdi");
+        var namaProdiElement = document.getElementById("namaProdi");
+        var statusElement = document.getElementById("status");
 
+        var idProdi = idProdiElement.value; // Assuming idProdi is a hidden input or another form element
         var hostname = "http://localhost:5268/";
-        var url = hostname + "GetProdi?id=" + idProdi.value; // Ubah ke idProdi
+        var url = hostname + "GetProdi?id=" + idProdi;
         var method = "GET";
 
         $.ajax({
@@ -34,16 +45,23 @@
             contentType: "application/json",
             success: function (data) {
                 var item = data.data;
-                namaProdi.value = item.namaProdi; // Ubah ke namaProdi
+                namaProdiElement.value = item.namaProdi;
+                statusElement.value = item.status;
+            },
+            error: function (error) {
+                console.error('Error:', error);
+                // Handle errors if necessary
             }
         });
     }
 </script>
 
+
 <script>
     function simpan() {
         var id = document.getElementById("idProdi").value;
         var namap = document.getElementById("namaProdi").value;
+        var status = document.getElementById("status").value;
 
         // Menampilkan SweetAlert konfirmasi
         Swal.fire({
@@ -65,6 +83,7 @@
                 var input = {
                     idProdi: id, // Mengirim ID yang ingin diupdate.
                     namaProdi: namap,
+                    status: status,
                 };
 
                 var data = JSON.stringify(input);
