@@ -1,0 +1,221 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+    <!-- ... tag-tag head lainnya ... -->
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.0/css/bootstrap.min.css">
+
+<style>
+
+    body {
+        padding-top: 60px; /* Atur spasi sesuai kebutuhan */
+    }
+
+    .row {
+        padding-left: 20px; /* Sesuaikan dengan jumlah padding yang diinginkan */
+        padding-right: 20px; /* Sesuaikan dengan jumlah padding yang diinginkan */
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td {
+        border: 3px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+</style>
+
+
+
+<div class="container-fluid">
+    <img class="d-block w-100" src="~/Content/Images/gambar_banner.jpg" />
+
+        <div class="row">
+            <div class="col-lg-4" style="text-align: center; padding: 40px 0px;">
+                <img src="~/content/images/IMG_LogoTransformationInHarmony.png" class="wow fadeInUp fast" style="width: 60%; visibility: visible; animation-name: fadeInUp; animation-iteration-count: 1;">
+            </div>
+            <div class="col-lg-4" style="text-align: center; padding: 40px 0px;">
+                <img src="~/content/images/IMG_LogoKampusMerdeka.png" class="wow fadeInUp fast" style="width: 30%; visibility: visible; animation-name: fadeInUp; animation-iteration-count: 1;">
+            </div>
+            <div class="col-lg-4" style="text-align: center; padding: 40px 0px;">
+                <img src="~/content/images/IMG_LogoSatuIndonesia.png" class="wow fadeInUp fast" style="width: 40%; visibility: visible; animation-name: fadeInUp; animation-iteration-count: 1;">
+            </div>
+        </div>
+
+        <!-- Bagian Tabel Pasien -->
+        <div class="col-lg-12">
+            <div class="row">
+                <div class="col-sm-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-sm-flex align-items-start justify-content-between mb-4">
+                                <div>
+                                    <h3 class="card-title mb-1">Daftar Sertifikasi</h3>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <div id="chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #chart {
+            position: relative;
+            align-items: center;
+            /*        left: -140px; /* Sesuaikan nilai left sesuai kebutuhan */
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <script>
+
+        $(document).ready(function () {
+            $('#mytable').DataTable();
+        });
+
+        function loadTable() {
+            var hostname = "http://localhost:5268/"
+            var url = hostname + "StatusData";
+            var method = "GET";
+            $.ajax({
+                url: url,
+                method: method,
+                contentType: "application/json",
+                success: function (data) {
+                    // Assuming data is an array of objects with 'namaProdi', 'kompeten', and 'tidakkompeten' properties
+
+                    // Extracting categories and series data from the API response
+                    var categories = data.map(item => item.namaProdi);
+                    var kompetenData = data.map(item => item.kompeten);
+                    var tidakKompetenData = data.map(item => item.tidakkompeten);
+
+                    // Updating ApexCharts options
+                    options.xaxis.categories = categories;
+                    options.series = [
+                        {
+                            name: 'Kompeten',
+                            type: 'column',
+                            data: kompetenData
+                        },
+                        {
+                            name: 'Tidak Kompeten',
+                            type: 'column',
+                            data: tidakKompetenData
+                        },
+                        {
+                            name: 'Line Chart', // Nama untuk grafik garis
+                            type: 'line', // Tipe grafik garis
+                            data: kompetenData
+                        }
+                    ];
+
+                    // Create a new ApexCharts instance or update the existing one
+                    if (chart) {
+                        chart.updateOptions(options, false, true);
+                    } else {
+                        chart = new ApexCharts(document.querySelector("#chart"), options);
+                        chart.render();
+                    }
+                }
+            });
+        }
+
+        // Call the loadTable function to fetch data and update the chart
+        loadTable();
+
+
+        var options = {
+            series: [],
+            chart: {
+                height: 350,
+                type: 'line',
+                stacked: false,
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                width: [1, 1, 4]
+            },
+            title: {
+                align: 'left',
+                offsetX: 110
+            },
+            xaxis: {
+                categories: [],
+            },
+            yaxis: [
+                {
+                    axisTicks: {
+                        show: true,
+                    },
+                    axisBorder: {
+                        show: true,
+                        color: '#008FFB'
+                    },
+                    labels: {
+                        style: {
+                            colors: '#008FFB',
+                        }
+                    },
+                    title: {
+                        style: {
+                            color: '#008FFB',
+                        }
+                    },
+                    tooltip: {
+                        enabled: true
+                    }
+                },
+            ],
+            tooltip: {
+                fixed: {
+                    enabled: true,
+                    position: 'topLeft', // topRight, topLeft, bottomRight, bottomLeft
+                    offsetY: 30,
+                    offsetX: 60
+                },
+            },
+            legend: {
+                horizontalAlign: 'left',
+                offsetX: 40
+            },
+            toolbar: {
+                show: false
+            },
+            contextMenu: {
+                show: false
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+    </script>
+
+    <style>
+        #chart {
+            margin: 0 auto; /* This will center the chart horizontally */
+        }
+
+        .apexcharts-toolbar {
+            display: none !important;
+        }
+
+        #chart-container {
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+        }
+    </style>
+

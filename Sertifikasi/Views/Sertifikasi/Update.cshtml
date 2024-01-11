@@ -1,0 +1,150 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Sertifikasi";
+}
+
+<div class="card-body">
+    <div class="form-group">
+        <input type="hidden" name="idSerti" id="idSerti" value="@ViewBag.Id" />
+        <div class="form-group">
+            <label for="idprodi" class="control-label">Program Studi</label>
+            <select name="idprodi" id="idprodi" class="form-control" required>
+                <option value="">-- Pilih Program Studi --</option>
+            </select>
+        </div>
+        <div class="form-group">
+                    <label class="control-label">Nama Sertifikasi</label>
+            <input class="form-control" name="namaserti" id="namaserti" />
+        </div>
+        <div class="form-group">
+            <label class="control-label">Tanggal Sertifikasi</label>
+            <input class="form-control" type="date" name="tanggal" id="tanggal" />
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary" onclick="simpan()">Simpan</button>
+    </div>
+</div>
+
+<script>
+    loadProdi();
+    loadData();
+
+    function loadProdi() {
+        var hostname = "http://localhost:5268/";
+        var url = hostname + "GetAllProdi";
+        var method = "GET";
+
+        $.ajax({
+            url: url,
+            method: method,
+            contentType: "application/json",
+            success: function (data) {
+                var list = data.data;
+                list.forEach(function (item) {
+                    var newOption = '<option value="' + item.idProdi + '">' + item.namaProdi + "</option>";
+                    $("#idprodi").append(newOption);
+                });
+            },
+        });
+    }
+
+    function loadData() {
+        var idserti = document.getElementById("idSerti");
+        var idProdi = document.getElementById("idprodi");
+        var namaSerti = document.getElementById("namaserti");
+        var tanggal = document.getElementById("tanggal");
+
+        var hostname = "http://localhost:5268/";
+        var url = hostname + "GetSertifikasi?id=" + idserti.value;
+        var method = "GET";
+
+        $.ajax({
+            url: url,
+            method: method,
+            contentType: "application/json",
+            success: function (data) {
+                var item = data.data;
+
+                var receivedDate = new Date(item.tanggal);
+                var formattedTanggal =
+                    receivedDate.getFullYear() +
+                    "-" +
+                    ("0" + (receivedDate.getMonth() + 1)).slice(-2) +
+                    "-" +
+                    ("0" + receivedDate.getDate()).slice(-2);
+
+                idProdi.value = item.idProdi;
+                namaSerti.value = item.namaSerti;
+                tanggal.value = formattedTanggal;
+            }
+        });
+    }
+
+</script>
+
+<script>
+
+    function simpan() {
+        var idserti = document.getElementById("idSerti").value;
+        var idpro = document.getElementById("idprodi").value;
+        var namaserti = document.getElementById("namaserti").value;
+        var tanggal = document.getElementById("tanggal").value;
+
+        console.log(idserti);  // Corrected variable name
+
+        // Menampilkan SweetAlert konfirmasi
+        Swal.fire({
+            title: 'Konfirmasi',
+            text: 'Apakah Anda yakin ingin memperbarui data?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                var hostname = "http://localhost:5268/";
+                var url = hostname + "UpdateSertifikasi";
+                var method = "PUT";
+
+                var input = {
+                    idsertifikat: idserti,
+                    idProdi: idpro,
+                    namaSerti: namaserti,
+                    tanggal: tanggal,
+                };
+
+                var data = JSON.stringify(input);
+
+                $.ajax({
+                    url: url,
+                    method: method,
+                    data: data,
+                    contentType: "application/json",
+                    success: function (data) {
+                        // Menampilkan SweetAlert setelah data berhasil diperbarui
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: 'Data berhasil diperbarui!',
+                        }).then((result) => {
+                            // Redirect ke halaman Index setelah menekan OK di SweetAlert
+                            if (result.isConfirmed) {
+                                window.location.href = "/Sertifikasi/Index";
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error: " + error);
+                        alert("Terjadi kesalahan saat memperbarui data.");
+                    }
+                });
+            }
+        });
+    }
+</script>

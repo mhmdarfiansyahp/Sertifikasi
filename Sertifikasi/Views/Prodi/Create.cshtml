@@ -1,0 +1,73 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+        ViewData["Title"] = "Program Studi";
+}
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="control-label">Nama Prodi</label>
+                    <input class="form-control" name="namaProdi" id="namaProdi" />
+                </div>
+                <br />
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" onclick="simpan()">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function simpan() {
+        var namap = document.getElementById("namaProdi").value;
+
+        // Check if Nama Prodi is empty
+        if (!namap.trim()) {
+            // Display error message
+            document.getElementById("namaProdiError").innerText = 'Nama Prodi harus diisi.';
+            return;
+        }
+
+        // Clear the error message if validation passes
+        document.getElementById("namaProdiError").innerText = '';
+
+        var hostname = "http://localhost:5268/";
+        var url = hostname + "InsertProdi";
+        var method = "POST";
+
+        var input = {
+            namaProdi: namap,
+        };
+
+        var data = JSON.stringify(input);
+
+        $.ajax({
+            url: url,
+            method: method,
+            data: data,
+            contentType: "application/json",
+            success: function (data) {
+                // Menampilkan SweetAlert setelah data berhasil disimpan
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'Data berhasil ditambahkan!',
+                }).then((result) => {
+                    // Redirect ke halaman Index setelah menekan OK di SweetAlert
+                    if (result.isConfirmed) {
+                        window.location.href = "/Prodi/Index";
+                    }
+                });
+            },
+            error: function (error) {
+                console.error('Error:', error);
+                // Tambahkan penanganan kesalahan jika diperlukan
+            }
+        });
+    }
+</script>

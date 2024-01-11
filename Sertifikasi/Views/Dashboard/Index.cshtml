@@ -1,0 +1,229 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model List<Sertifikasi.Model.DetailSertiModel>
+@{
+    ViewData["Title"] = "Dashboard";
+    int no = 1;
+}
+
+
+<div class="row">
+    <div class="col-md-3">
+        <a asp-controller="Dashboard" asp-action="Create" class="btn btn-success">
+            <i class="fa fa-plus"></i>&nbsp;Tambah
+        </a>
+        <a href="" class="btn btn-warning">
+            <i class="fa fa-upload"></i>&nbsp;Import dari Excel
+        </a>
+    </div>
+</div>
+<br>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h3>Grafik Keseluruhan Sertifikasi</h3>
+            </div>
+            <div class="card-body">
+                <div id="chart-container">
+                    <!-- Elemen canvas akan dibuat secara dinamis oleh ApexCharts -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="chart"></div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <br />
+
+        <div class="card-body">
+            <br />
+            <br />
+            <table id="mytable" class="table table-striped table-hover table-bordered table-condensed table-striped mx-auto text-center">
+                <thead>
+                    <tr>
+                        <th scope="col" style="text-align: center;">No.</th>
+                        <th scope="col" style="text-align: center;">Nama Prodi</th>
+                        <th scope="col" style="text-align: center;">Jumlah Sertifikasi</th>
+                        <th scope="col" style="text-align: center;">Jumlah Kompeten</th>
+                        <th scope="col" style="text-align: center;">Jumlah Tidak Kompeten</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    @foreach (var detail in Model)
+                    {
+                        <tr>
+                            <td>@(no++)</td>
+                            <td>@detail.namaProdi</td>
+                            <td>@detail.jumlahserti</td>
+                            <td>@detail.jumlahKompeten</td>
+                            <td>@detail.jumlahtidakKom</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<script>
+
+    $(document).ready(function () {
+        $('#mytable').DataTable({
+            "order": [], // Menghilangkan pengurutan awal
+            "columnDefs": [
+                { "orderable": false, "targets": [0, 1, 2, 3, 4] } // Sesuaikan dengan indeks kolom yang tidak ingin diurutkan
+            ]
+        });
+    });
+
+    function loadTable() {
+        var hostname = "http://localhost:5268/"
+        var url = hostname + "StatusData";
+        var method = "GET";
+        $.ajax({
+            url: url,
+            method: method,
+            contentType: "application/json",
+            success: function (data) {
+                // Assuming data is an array of objects with 'namaProdi', 'kompeten', and 'tidakkompeten' properties
+
+                // Extracting categories and series data from the API response
+                var categories = data.map(item => item.namaProdi);
+                var kompetenData = data.map(item => item.kompeten);
+                var tidakKompetenData = data.map(item => item.tidakkompeten);
+
+                // Updating ApexCharts options
+                options.xaxis.categories = categories;
+                options.series = [
+                    {
+                        name: 'Kompeten',
+                        type: 'column',
+                        data: kompetenData
+                    },
+                    {
+                        name: 'Tidak Kompeten',
+                        type: 'column',
+                        data: tidakKompetenData
+                    },
+                    {
+                        name: 'Line Chart', // Nama untuk grafik garis
+                        type: 'line', // Tipe grafik garis
+                        data: kompetenData
+                    }
+                ];
+
+                // Create a new ApexCharts instance or update the existing one
+                if (chart) {
+                    chart.updateOptions(options, false, true);
+                } else {
+                    chart = new ApexCharts(document.querySelector("#chart"), options);
+                    chart.render();
+                }
+            }
+        });
+    }
+
+    // Call the loadTable function to fetch data and update the chart
+    loadTable();
+
+
+    var options = {
+        series: [{
+            name: 'Income',
+            type: 'column',
+            data: [1.4, 2, 2.5, 1.5, 2.5, 2.8, 3.8, 4.6]
+        }, {
+            name: 'Cashflow',
+            type: 'column',
+            data: [1.1, 3, 3.1, 4, 4.1, 4.9, 6.5, 8.5]
+        }, {
+            name: 'Revenue',
+            type: 'line',
+            data: [20, 29, 37, 36, 44, 45, 50, 58]
+        }],
+        chart: {
+            height: 350,
+            type: 'line',
+            stacked: false,
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            width: [1, 1, 4]
+        },
+        title: {
+            align: 'left',
+            offsetX: 110
+        },
+        xaxis: {
+            categories: ['MI', 2010, 2011, 2012, 2013, 2014, 2015, 2016],
+        },
+        yaxis: [
+            {
+                axisTicks: {
+                    show: true,
+                },
+                axisBorder: {
+                    show: true,
+                    color: '#008FFB'
+                },
+                labels: {
+                    style: {
+                        colors: '#008FFB',
+                    }
+                },
+                title: {
+                    text: "Income (thousand crores)",
+                    style: {
+                        color: '#008FFB',
+                    }
+                },
+                tooltip: {
+                    enabled: true
+                }
+            },
+        ],
+        tooltip: {
+            fixed: {
+                enabled: true,
+                position: 'topLeft', // topRight, topLeft, bottomRight, bottomLeft
+                offsetY: 30,
+                offsetX: 60
+            },
+        },
+        legend: {
+            horizontalAlign: 'left',
+            offsetX: 40
+        },
+        toolbar: {
+            show: false
+        },
+        contextMenu: {
+            show: false
+        }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#chart"), options);
+    chart.render();
+</script>
+
+<style>
+    .apexcharts-toolbar {
+        display: none !important;
+    }
+
+    #chart-container {
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+    }
+</style>

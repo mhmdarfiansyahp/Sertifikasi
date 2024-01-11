@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "Sertifikasi";
+}
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="idserti" class="control-label"></label>
+                    <select name="idserti" id="idserti" class="form-control" required>
+                        <option value="">-- Pilih Sertifikasi --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Nama Peserta</label>
+                    <input class="form-control" name="namapeserta" id="namapeserta" />
+                </div>
+                <div class="form-group">
+                    <label for="status" class="control-label">Status Peserta</label>
+                    <select name="status" id="status" class="form-control" required>
+                        <option value="">-- Pilih Status --</option>
+                        <option value="1">Kompeten</option>
+                        <option value="0">Tidak Kompeten</option>
+                    </select>
+                </div>
+                <br />
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" onclick="simpan()">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    loadSerti();
+
+    function loadSerti() {
+        var hostname = "http://localhost:5268/";
+        var url = hostname + "GetAllSertifikasi";
+        var method = "GET";
+
+        $.ajax({
+            url: url,
+            method: method,
+            contentType: "application/json",
+            success: function (data) {
+                var list = data.data;
+                list.forEach(function (item) {
+                    console.log(item)
+                    var newOption = '<option value="' + item.idsertifikat + '">' + item.namaSerti + "</option>";
+                    $("#idserti").append(newOption);
+                });
+            },
+        });
+    }
+
+    function simpan() {
+        var idSerti = document.getElementById("idserti").value;
+        var namapeser = document.getElementById("namapeserta").value;
+        var status = document.getElementById("status").value;
+
+        console.log(idSerti)
+        console.log(namapeser)
+        console.log(status)
+
+        var hostname = "http://localhost:5268/";
+        var url = hostname + "InsertDetail";
+        var method = "POST";
+
+        var input = {
+            idsertifikasi: idSerti,
+            namaPeserta: namapeser,
+            status: status,
+        };
+
+        var data = JSON.stringify(input);
+
+        $.ajax({
+            url: url,
+            method: method,
+            data: data,
+            contentType: "application/json",
+            success: function (data) {
+                alert("Data Berhasil Ditambahkan");
+                window.location.href = "/Dashboard/Index";
+            }
+        });
+    }
+</script>
