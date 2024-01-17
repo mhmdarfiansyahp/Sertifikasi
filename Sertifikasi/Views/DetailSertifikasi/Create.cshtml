@@ -3,31 +3,40 @@
 }
 
 <div class="content">
+    <form method="post">
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
-                <div class="form-group">
-                    <label for="idsertifikasi" class="control-label">Nama Sertifikasi <span style="color: red;">*</span></label>
-                    <select name="idsertifikasi" id="idsertifikasi" class="form-control" required>
-                        <option selected disabled>-- Pilih Nama Sertifikasi --</option>
-                    </select>
-                    <span id="idsertifikasiError" class="text-danger"></span>
-                </div>
+                    <div class="form-group">
+                        <label for="idprodi" class="control-label">Program Studi</label>
+                        <select name="idprodi" id="idprodi" class="form-control" required>
+                            <option value="">-- Pilih Program Studi --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Nama sertifikasi <span style="color: red;">*</span></label>
+                        <input class="form-control" name="namasertifikat" id="namasertifikat" required />
+                        <span id="namasertifikat" class="text-danger"></span>
+                    </div>
+
 
                 <div class="form-group">
-                    <label class="control-label">Tanggal Sertifikasi <span style="color: red;">*</span></label>
+                    <label class="control-label">Tanggal sertifikasi <span style="color: red;">*</span></label>
                     <input class="form-control" type="date" name="tanggal" id="tanggal" />
                     <span id="tanggalError" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label class="control-label">Lembaga Sertifikasi <span style="color: red;">*</span></label>
+                    <label class="control-label">Lembaga sertifikasi <span style="color: red;">*</span></label>
                     <input class="form-control" name="lembagaserti" id="lembagaserti" required />
                     <span id="lembagaSerti" class="text-danger"></span>
                 </div>
 
+
+
                 <div class="form-group">
-                    <label class="control-label">Level Sertifikasi <span style="color: red;">*</span></label>
+                    <label class="control-label">Level sertifikasi <span style="color: red;">*</span></label>
                     <input class="form-control" name="levelserti" id="levelserti" required />
                     <span id="levelSerti" class="text-danger"></span>
                 </div>
@@ -38,13 +47,41 @@
                     <span id="levelkkni" class="text-danger"></span>
                 </div>
 
+                 <div class="form-group">
+                        <label class="control-label">Jumlah yang berkompeten <span style="color: red;">*</span></label>
+                        <input class="form-control" type="number" name="kompeten" id="kompeten" required />
+                        <span id="kompeten" class="text-danger"></span>
+                 </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Jumlah yang tidak berkompeten<span style="color: red;">*</span></label>
+                        <input class="form-control" type="number" name="tidakkompeten" id="tidakkompeten" required />
+                        <span id="tidakkompeten" class="text-danger"></span>
+                    </div>
+
+
+
+                <div class="form-group">
+                    <label class="control-label">
+                        Bukti Pendukung
+                        <span style="color: red;">*</span>
+                    </label>
+
+                    <div class="form-group">
+                        <div class="col-mid-10">
+                            <input type="file" class="form-control" name="buktipendukung" id="buktipendukung" multiple="multiple" accept=".pdf" required>
+                        </div>
+                    </div>
+                </div>
+
                 <br />
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary" onclick="simpan()">Simpan</button>
                 </div>
             </div>
         </div>
-    </div>
+       </div>
+    </form>
 </div>
 
 <script>
@@ -52,7 +89,7 @@
 
     function loadProdi() {
         var hostname = "http://localhost:5268/";
-        var url = hostname + "GetAllSertifikasi";
+        var url = hostname + "GetAllProdi";
         var method = "GET";
 
         $.ajax({
@@ -62,21 +99,25 @@
             success: function (data) {
                 var list = data.data;
                 list.forEach(function (item) {
-                    var newOption = '<option value="' + item.idsertifikat + '">' + item.namaSerti + "</option>";
-                    $("#idsertifikasi").append(newOption);
+                    var newOption = '<option value="' + item.idProdi + '">' + item.namaProdi + "</option>";
+                    $("#idprodi").append(newOption);
                 });
             },
         });
     }
 
     function simpan() {
-        var idser = document.getElementById("idsertifikasi").value;
+        var idser = document.getElementById("idProdi").value;
+        var namaserti = document.getElementById("namasertifikat").value;
         var tanggal = document.getElementById("tanggal").value;
         var lembaga = document.getElementById("lembagaserti").value;
         var level = document.getElementById("levelserti").value;
         var levelk = document.getElementById("levelkkni").value;
+        var modul = $("#buktipendukung")[0].files[0];
+        var kompeten = document.getElementById("kompeten").value;
+        var tidakkompeten = document.getElementById("tidakkompeten").value;
 
-        document.getElementById("idsertifikasiError").innerText = '';
+        document.getElementById("idProdi").innerText = '';
         document.getElementById("lembagaSerti").innerText = '';
         document.getElementById("levelSerti").innerText = '';
         document.getElementById("levelkkni").innerText = '';
@@ -119,24 +160,33 @@
             return;
         }
 
+        if (modul) {
+            uploadFile(modul); // Upload the selected file
+        }
+
+
         var hostname = "http://localhost:5268/";
         var url = hostname + "InsertDetailSertifikasi";
         var method = "POST";
 
-        var input = {
-            idsertifikasi: idser,
+        var data = {
+            idProdi: idser,
+            namaSerti: namaserti,
             tanggal: tanggal,
             lembaga: lembaga,
             level:level,
             levelKKNI: levelk,
-        };
+            PDF: modul ? modul.name : null,
+            kompeten: kompeten,
+            tidak_kompeten:tidakkompeten
 
-        var data = JSON.stringify(input);
+
+            };
 
         $.ajax({
             url: url,
             method: method,
-            data: data,
+            data: JSON.stringify(data),
             contentType: "application/json",
             success: function (data) {
                 // Menampilkan SweetAlert setelah data berhasil disimpan
@@ -150,11 +200,35 @@
                         window.location.href = "/DetailSertifikasi/Index";
                     }
                 });
+                downloadFile(data);
             },
             error: function (error) {
                 console.error('Error:', error);
                 // Tambahkan penanganan kesalahan jika diperlukan
             }
         });
+
+        var rootHost = "http://localhost:5268";
+
+         function uploadFile(file) {
+            var formData = new FormData();
+            formData.append("file", file);
+
+            $.ajax({
+                url: rootHost + '/DetailSertifikasi/UploadFile',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    // Handle success, if needed
+                    console.log("File uploaded successfully");
+                },
+                error: function () {
+                    // Handle error, if needed
+                    console.log("Error uploading file");
+                }
+            });
+        }
     }
 </script>
