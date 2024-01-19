@@ -4,85 +4,86 @@
 
 <div class="content">
     <form method="post">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="idprodi" class="control-label">Program Studi</label>
+                            <select name="idprodi" id="idprodi" class="form-control" required>
+                                <option value="">-- Pilih Program Studi --</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Nama sertifikasi <span style="color: red;">*</span></label>
+                            <input class="form-control" name="namasertifikat" id="namasertifikat" required />
+                            <span id="namasertifikat" class="text-danger"></span>
+                        </div>
+
+
                     <div class="form-group">
-                        <label for="idprodi" class="control-label">Program Studi</label>
-                        <select name="idprodi" id="idprodi" class="form-control" required>
-                            <option value="">-- Pilih Program Studi --</option>
-                        </select>
+                        <label class="control-label">Tanggal sertifikasi <span style="color: red;">*</span></label>
+                        <input class="form-control" type="date" name="tanggal" id="tanggal" />
+                        <span id="tanggalError" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label">Nama sertifikasi <span style="color: red;">*</span></label>
-                        <input class="form-control" name="namasertifikat" id="namasertifikat" required />
-                        <span id="namasertifikat" class="text-danger"></span>
+                        <label class="control-label">Lembaga sertifikasi <span style="color: red;">*</span></label>
+                        <input class="form-control" name="lembagaserti" id="lembagaserti" required />
+                        <span id="lembagaSerti" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Level sertifikasi <span style="color: red;">*</span></label>
+                        <input class="form-control" name="levelserti" id="levelserti" required />
+                        <span id="levelSerti" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Level KKNI <span style="color: red;">*</span></label>
+                        <input class="form-control" type="number" name="levelkkni" id="levelkkni" required />
+                        <span id="levelkkni" class="text-danger"></span>
                     </div>
 
 
-                <div class="form-group">
-                    <label class="control-label">Tanggal sertifikasi <span style="color: red;">*</span></label>
-                    <input class="form-control" type="date" name="tanggal" id="tanggal" />
-                    <span id="tanggalError" class="text-danger"></span>
+                    <div class="form-group">
+                        <label class="control-label">Bukti Pendukung <span style="color: red;">*</span></label>
+                            <input class="form-control" type="file" name="buktipendukung" id="buktipendukung" multiple="multiple" accept=".pdf" required />
+                            <span id="buktipendukung" class="text-danger"></span>
+                    </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Peserta Kompeten <span style="color: red;">*</span></label>
+                            <input class="form-control" type="number" name="kompeten" id="kompeten" required onchange="hitungJumlahPeserta()" />
+                            <span id="kompeten" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Peserta Tidak Kompeten <span style="color: red;">*</span></label>
+                            <input class="form-control" type="number" name="tidakkompeten" id="tidakkompeten" required onchange="hitungJumlahPeserta()" />
+                            <span id="tidakkompeten" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Peserta Tidak Hadir <span style="color: red;">*</span></label>
+                            <input class="form-control" type="number" name="tidakhadir" id="tidakhadir" required onchange="hitungJumlahPeserta()" />
+                            <span id="tidakhadir" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="jumlah">Total Peserta <span style="color: red;">*</span></label>
+                            <input type="number" name="jumlah" class="form-control" id="jumlah" readonly>
+                        </div>
+    @*                    <div class="form-group">
+                            <label for="jumlah">Progress <span style="color: red;">*</span></label>
+                            <progress id="fileProgress" style="display: none"></progress>
+                        </div>*@
+
+                        <br />
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" onclick="simpan()">Simpan</button>
+                        </div>
                 </div>
-
-                <div class="form-group">
-                    <label class="control-label">Lembaga sertifikasi <span style="color: red;">*</span></label>
-                    <input class="form-control" name="lembagaserti" id="lembagaserti" required />
-                    <span id="lembagaSerti" class="text-danger"></span>
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label">Level sertifikasi <span style="color: red;">*</span></label>
-                    <input class="form-control" name="levelserti" id="levelserti" required />
-                    <span id="levelSerti" class="text-danger"></span>
-                </div>
-
-                <div class="form-group">
-                    <label class="control-label">Level KKNI <span style="color: red;">*</span></label>
-                    <input class="form-control" type="number" name="levelkkni" id="levelkkni" required />
-                    <span id="levelkkni" class="text-danger"></span>
-                </div>
-
-
-                <div class="form-group">
-                    <label class="control-label">Bukti Pendukung <span style="color: red;">*</span></label>
-                        <input class="form-control" type="file" name="buktipendukung" id="buktipendukung" multiple="multiple" accept=".pdf" required />
-                        <span id="buktipendukung" class="text-danger"></span>
-                </div>
-
-                    <div class="form-group">
-                        <label class="control-label">Peserta Kompeten <span style="color: red;">*</span></label>
-                        <input class="form-control" type="number" name="kompeten" id="kompeten" required onchange="hitungJumlahPeserta()" />
-                        <span id="kompeten" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label">Peserta Tidak Kompeten <span style="color: red;">*</span></label>
-                        <input class="form-control" type="number" name="tidakkompeten" id="tidakkompeten" required onchange="hitungJumlahPeserta()" />
-                        <span id="tidakkompeten" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label">Peserta Tidak Hadir <span style="color: red;">*</span></label>
-                        <input class="form-control" type="number" name="tidakhadir" id="tidakhadir" required onchange="hitungJumlahPeserta()" />
-                        <span id="tidakhadir" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="jumlah">Total Peserta <span style="color: red;">*</span></label>
-                        <input type="number" name="jumlah" class="form-control" id="jumlah" readonly>
-                    </div>
-@*                    <div class="form-group">
-                        <label for="jumlah">Progress <span style="color: red;">*</span></label>
-                        <progress id="fileProgress" style="display: none"></progress>
-                    </div>*@
-
-                    <br />
-                    <div class="form-group">
-                        <button type="button" class="btn btn-primary" onclick="simpan()">Simpan</button>
-                    </div>
             </div>
         </div>
     </form>
@@ -117,49 +118,6 @@
         var url = hostname + "InsertSertifikasi";
         var method = "POST";
         console.log(url);
-        /*
-        document.getElementById("idProdi").innerText = '';
-        document.getElementById("lembagaSerti").innerText = '';
-        document.getElementById("levelSerti").innerText = '';
-        document.getElementById("levelkkni").innerText = '';
-        document.getElementById("tanggalError").innerText = '';  // New line for date validation
-        var isValid = true;
-
-        if (!lembaga.trim()) {
-            // Display error message for empty certification name
-            document.getElementById("lembagaSerti").innerText = 'Lembaga Sertifikasi harus diisi.';
-            isValid = false;
-        }
-
-        if (idser === "-- Pilih Nama Sertifikasi --") {
-            // Display error message for not selecting a program
-            document.getElementById("idsertifikasiError").innerText = 'Nama Sertifikasi harus dipilih.';
-            isValid = false;
-        }
-
-        if (!level.trim()) {
-            // Display error message for empty certification name
-            document.getElementById("levelSerti").innerText = 'Level Sertifikasi harus diisi.';
-            isValid = false;
-        }
-
-        if (!levelk.trim()) {
-            // Display error message for empty certification name
-            document.getElementById("levelkkni").innerText = 'Level KKNI harus diisi.';
-            isValid = false;
-        }
-
-        if (!tanggal.trim()) {
-            // Display error message for empty date
-            document.getElementById("tanggalError").innerText = 'Tanggal Sertifikasi harus diisi.';
-            isValid = false;
-        }
-
-        if (!isValid) {
-            // Stop further processing if there are validation errors
-            return;
-        }
-        */
 
         var formData = new FormData();
         formData.append("idprodi", $('#idprodi').val());
@@ -174,8 +132,6 @@
         formData.append("jumlah", $('#jumlah').val());
         formData.append("fileName", $("#buktipendukung")[0].files[0].name);
         formData.append("file", $("#buktipendukung")[0].files[0]);
-
-        
 
         $.ajax({
             url: url,
@@ -192,9 +148,10 @@
                     text: 'Data berhasil ditambahkan!' + data.messages,
                 }).then((result) => {
                     // Redirect ke halaman Index setelah menekan OK di SweetAlert
-                    if (result.isConfirmed) {
-                        
-                    }
+                    //if (result.isConfirmed) {
+                    alert("Data Berhasil Ditambahkan");
+                    window.location.href = "/Sertifikasi/Index";
+
                 });
                 //downloadFile(data);
                 

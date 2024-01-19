@@ -120,6 +120,7 @@
     }
 
     $(document).ready(function() {
+        loadFilterKeseluruhan();
         loadGrafikkeseluruhan();
     });
 
@@ -128,21 +129,24 @@
         // Attach an event listener to the dropdown
         $('#filter-year').change(function () {
             // Get the selected year
-            const selectedYear = $(this).val();
-            var years = document.getElementById('filter-year').value;
+            const years = $(this).val();
             var idProdi = document.getElementById('idprodi').value;
 
             // Call the function to load data based on the selected year
-            if (selectedYear === "") {
+            if (years === "" && idProdi === "") {
                 // Call the function to load data for all years
+                loadFilterKeseluruhan();
                 loadGrafikkeseluruhan();
-            } else if (selectedYear !== "" && idProdi == "") {
+            } else if (years === "" && idProdi !== "") {
                 // Call the function to load data based on the selected year
-                loadGrafikByProdi(idProdi)
-            } else if (selectedYear == "" && idProdi == "") {
-                loadGrafikByYear(selectedYear);
-                //loadGrafikserti(sertifikasi);
-                //loadGrafikpilihserti(sertifikasi,years);
+                loadFilterByProdi(idProdi);
+                loadGrafikByProdi(idProdi);
+            } else if (years !== "" && idProdi == "") {
+                loadGrafikByYear(years);
+            } else {
+                loadFilterByProdiAndYear(idProdi, years);
+                loadGrafikByProdiAndYears(idProdi, years);
+                //loadGrafikpilihserti(idProdi, years);
             }
         });
     });
@@ -156,16 +160,18 @@
             // Call the function to load data based on the selected 
             if (years === "" && idProdi === "") {
                 // Call the function to load data for all years
+                loadFilterKeseluruhan();
                 loadGrafikkeseluruhan();
-            } else if (years == "" && idProdi !== "") {
+            } else if (years === "" && idProdi !== "") {
                 // Call the function to load data based on the selected year
-                loadGrafikByProdi(idProdi)
+                loadFilterByProdi(idProdi);
+                loadGrafikByProdi(idProdi);
             } else if (years !== "" && idProdi == "") {
-                loadGrafikByYear(years)
-            } else if (years !== "" && idProdi !== "") {
-                loadGrafikByYear(years)
-                loadGrafikByProdi(idProdi)
-                //loadGrafikserti(idProdi);
+                loadFilterByYear(years);
+                loadGrafikByYear(years);
+            } else {
+                loadFilterByProdiAndYear(idProdi,years);
+                loadGrafikByProdiAndYears(idProdi,years);
                 //loadGrafikpilihserti(idProdi, years);
             }
         
@@ -177,11 +183,22 @@
         $('#filter-sertifikasi').change(function () {
             // Get the selected year
             const id_sertifikasi = $(this).val();
+            var years = document.getElementById('filter-year').value;
+            var idProdi = document.getElementById('idprodi').value;
 
-            if (id_sertifikasi === "") {
+            if (id_sertifikasi !== "") {
+                loadGrafikBySertif(id_sertifikasi);
+            } else if (years === "" && idProdi === "" && id_sertifikasi == "") {
+                // Call the function to load data for all years
                 loadGrafikkeseluruhan();
+            } else if (years === "" && idProdi !== "" && id_sertifikasi == "") {
+                // Call the function to load data based on the selected year
+                loadGrafikByProdi(idProdi);
+            } else if (years !== "" && idProdi == "" && id_sertifikasi == "") {
+                loadGrafikByYear(years);
             } else {
-                loadGrafiksertifikasi(id_sertifikasi);
+                loadGrafikByProdiAndYears(idProdi, years);
+                //loadGrafikpilihserti(idProdi, years);
             }
 
         });
@@ -201,7 +218,8 @@
                     beginAtZero: true
                 },
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    suggestedMax: 50,
                 }
             },
             plugins: {
@@ -221,6 +239,18 @@
             },
             options: options
         });
+
+        function updateChartSize() {
+            chart.resize();
+        }
+
+        // Update chart size when the window is resized
+        window.addEventListener('resize', function () {
+            updateChartSize();
+        });
+
+        // Initial call to set up the chart size
+        updateChartSize();
     });
 
 
@@ -309,8 +339,6 @@
             type: "GET",
             dataType: 'json',
             success: function (data) {
-                console.log(selectedYear);
-                console.log(data);
                     var dataSerti = data.data;
 
                     var namaProdi = [];
@@ -457,10 +485,164 @@
         });
     }
 
-    function loadFilterByProdiAndYear(id_prodi, years) {
-        console.log(id_prodi, years);
+    function loadGrafikByProdiAndYears(idProdi, years) {
         var hostname = "https://localhost:44303/";
-        var url = hostname + "GetAll";
+        var url = hostname + "GetAllData";
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: 'json',
+                // data: { year: selectedYear },
+                success: function (data) {
+                console.log(idProdi);
+
+                   var dataSerti = data.data;
+
+                    var namaSerti = [];
+                    var kompeten = [];
+                    var tidakkompeten = [];
+                    var tidakhadir = [];
+
+                    var i = 0;
+                    dataSerti.forEach(function(item) {
+                        if (item.idProdi == idProdi && item.tahunSertifikasi == years) {
+                            namaSerti[i] = item.namaSertifikasi;
+                            kompeten[i] = item.kompeten;
+                            tidakkompeten[i] = item.tidakkompeten;
+                            tidakhadir[i] = item.tidakhadir;
+                            i++;
+                        }
+                    });
+                    // Clear existing datasets
+                    chart.data.datasets = [];
+
+                    // Add bar datasets
+                    chart.data.datasets.push({
+                        label: 'Kompeten (Bar)',
+                        type: 'bar',
+                        data: kompeten,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgb(54, 162, 235)',
+                        borderWidth: 1,
+                        order: 2 // specify the order for this dataset
+                    });
+
+                    chart.data.datasets.push({
+                        label: 'TidakKompeten',
+                        type: 'bar',
+                        data: tidakkompeten,
+                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                        borderColor: 'rgb(255, 159, 64)',
+                        borderWidth: 1,
+                        order: 2 // specify the order for this dataset
+                    });
+
+                    chart.data.datasets.push({
+                        label: 'TidakHadir',
+                        type: 'bar',
+                        data: tidakhadir,
+                        backgroundColor: 'rgba(255, 205, 86, 0.2)',
+                        borderColor: 'rgb(255, 205, 86)',
+                        borderWidth: 1,
+                        order: 2 // specify the order for this dataset
+                    });
+
+                    // Update x-axis categories
+                    chart.data.labels = namaSerti;
+
+                    // Update the chart
+                    chart.update();
+                },
+
+            // Handle errors in the AJAX request
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                swal.fire("Error!", "Terjadi kesalahan saat mengambil data pemakaian!", "error");
+            }
+        });
+    }
+
+    function loadGrafikBySertif(idSertif) {
+        var hostname = "https://localhost:44303/";
+        var url = hostname + "GetAllData";
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: 'json',
+                // data: { year: selectedYear },
+                success: function (data) {
+
+                    var dataSerti = data.data;
+
+                    var namaSerti = [];
+                    var kompeten = [];
+                    var tidakkompeten = [];
+                    var tidakhadir = [];
+
+                    var i = 0;
+                    dataSerti.forEach(function(item) {
+                        if (item.idSertifikasi == idSertif) {
+                            namaSerti[i] = item.namaSertifikasi;
+                            kompeten[i] = item.kompeten;
+                            tidakkompeten[i] = item.tidakkompeten;
+                            tidakhadir[i] = item.tidakhadir;
+                            i++;
+                        }
+                    });
+                    // Clear existing datasets
+                    chart.data.datasets = [];
+
+                    // Add bar datasets
+                    chart.data.datasets.push({
+                        label: 'Kompeten (Bar)',
+                        type: 'bar',
+                        data: kompeten,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgb(54, 162, 235)',
+                        borderWidth: 1,
+                        order: 2 // specify the order for this dataset
+                    });
+
+                    chart.data.datasets.push({
+                        label: 'TidakKompeten',
+                        type: 'bar',
+                        data: tidakkompeten,
+                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                        borderColor: 'rgb(255, 159, 64)',
+                        borderWidth: 1,
+                        order: 2 // specify the order for this dataset
+                    });
+
+                    chart.data.datasets.push({
+                        label: 'TidakHadir',
+                        type: 'bar',
+                        data: tidakhadir,
+                        backgroundColor: 'rgba(255, 205, 86, 0.2)',
+                        borderColor: 'rgb(255, 205, 86)',
+                        borderWidth: 1,
+                        order: 2 // specify the order for this dataset
+                    });
+
+                    // Update x-axis categories
+                    chart.data.labels = namaSerti;
+
+                    // Update the chart
+                    chart.update();
+                },
+
+            // Handle errors in the AJAX request
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                swal.fire("Error!", "Terjadi kesalahan saat mengambil data pemakaian!", "error");
+            }
+        });
+    }
+
+    function loadFilterKeseluruhan() {
+        var hostname = "https://localhost:44303/";
+        var url = hostname + "GetAllData";
 
         $.ajax({
             url: url,
@@ -468,7 +650,6 @@
             dataType: 'json',
             // data: { year: selectedYear },
             success: function (data) {
-                console.log(id_prodi, years);
 
                 var dataSertif = data.data;
                 // Assuming data is directly used instead of newDataArray or dataSerti
@@ -477,11 +658,107 @@
                 $('#filter-sertifikasi').append("<option value=''>Pilih Sertifikasi</option>");
 
                 dataSertif.forEach(function (item){
-                        var id_sertifikasi = dataSertif[i].idSertifikasi;
-                        var nama_sertifikasi = dataSertif[i].namaSertifikasi;
+                    var newOption = "<option value='" + item.idSertifikasi + "'>" + item.namaSertifikasi + "</option>";
+                    $('#filter-sertifikasi').append(newOption);
+                });
+            },
 
-                        var newOption = "<option value='" + id_sertifikasi + "'>" + nama_sertifikasi + "</option>";
+            // Handle errors in the AJAX request
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                swal.fire("Error!", "Terjadi kesalahan saat mengambil data pemakaian!", "error");
+            }
+        });
+    }
+
+    function loadFilterByYear(years) {
+        var hostname = "https://localhost:44303/";
+        var url = hostname + "GetAllData";
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: 'json',
+            // data: { year: selectedYear },
+            success: function (data) {
+
+                var dataSertif = data.data;
+                // Assuming data is directly used instead of newDataArray or dataSerti
+                console.log(dataSertif);
+                $('#filter-sertifikasi').empty();
+                $('#filter-sertifikasi').append("<option value=''>Pilih Sertifikasi</option>");
+
+                dataSertif.forEach(function (item){
+                    if (item.tahunSertifikasi == years) {
+                        var newOption = "<option value='" + item.idSertifikasi + "'>" + item.namaSertifikasi + "</option>";
                         $('#filter-sertifikasi').append(newOption);
+                    }
+                });
+            },
+
+            // Handle errors in the AJAX request
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                swal.fire("Error!", "Terjadi kesalahan saat mengambil data pemakaian!", "error");
+            }
+        });
+    }
+
+    function loadFilterByProdi(idProdi) {
+        var hostname = "https://localhost:44303/";
+        var url = hostname + "GetAllData";
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: 'json',
+            // data: { year: selectedYear },
+            success: function (data) {
+
+                var dataSertif = data.data;
+                // Assuming data is directly used instead of newDataArray or dataSerti
+                console.log(dataSertif);
+                $('#filter-sertifikasi').empty();
+                $('#filter-sertifikasi').append("<option value=''>Pilih Sertifikasi</option>");
+
+                dataSertif.forEach(function (item){
+                    if (item.idProdi == idProdi) {
+                        var newOption = "<option value='" + item.idSertifikasi + "'>" + item.namaSertifikasi + "</option>";
+                        $('#filter-sertifikasi').append(newOption);
+                    }
+                });
+            },
+
+            // Handle errors in the AJAX request
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                swal.fire("Error!", "Terjadi kesalahan saat mengambil data pemakaian!", "error");
+            }
+        });
+    }
+
+    function loadFilterByProdiAndYear(idProdi, years) {
+        var hostname = "https://localhost:44303/";
+        var url = hostname + "GetAllData";
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: 'json',
+            // data: { year: selectedYear },
+            success: function (data) {
+
+                var dataSertif = data.data;
+                // Assuming data is directly used instead of newDataArray or dataSerti
+                console.log(dataSertif);
+                $('#filter-sertifikasi').empty();
+                $('#filter-sertifikasi').append("<option value=''>Pilih Sertifikasi</option>");
+
+                dataSertif.forEach(function (item){
+                    if (item.idProdi == idProdi && item.tahunSertifikasi == years) {
+                        var newOption = "<option value='" + item.idSertifikasi + "'>" + item.namaSertifikasi + "</option>";
+                        $('#filter-sertifikasi').append(newOption);
+                    }
                 });
             },
 
