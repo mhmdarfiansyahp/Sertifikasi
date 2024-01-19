@@ -11,7 +11,7 @@
 
         <div class="card-body">
 
-            <a asp-controller="Prodi" class="btn btn-primary" asp-action="Create" title="Create Program Studi">+ Create Program Studi</a>
+            <a asp-controller="Prodi" class="btn btn-primary" asp-action="Create" title="Create Program Studi"><i class="fa fa-plus"></i>&nbsp;Create Program Studi</a>
             <br />
             <br />
             <table class="table table-hover table-bordered table-condensed table-striped mx-auto text-center">
@@ -33,7 +33,7 @@
     loadTable();
 
     function loadTable() {
-        var hostname = "http://localhost:5268/"
+        var hostname = "https://localhost:44303/"
         var url = hostname + "GetAllProdi";
         var method = "GET";
         $.ajax({
@@ -72,7 +72,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 // Jika pengguna mengonfirmasi
-                var hostname = "http://localhost:5268/";
+                var hostname = "https://localhost:44303/";
                 var url = hostname + "DeleteProdi?id=" + id;
                 var method = "POST";
 

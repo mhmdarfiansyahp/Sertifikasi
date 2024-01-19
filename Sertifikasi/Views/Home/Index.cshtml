@@ -48,162 +48,452 @@
         </div>
 
         <!-- Bagian Tabel Pasien -->
-        <div class="col-lg-12">
-            <div class="row">
-                <div class="col-sm-12 grid-margin stretch-card">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-sm-flex align-items-start justify-content-between mb-4">
-                                <div>
-                                    <h3 class="card-title mb-1">Daftar Sertifikasi</h3>
-                                </div>
-                            </div>
-                            <div class="chart-container">
-                                <div id="chart"></div>
+    <div class="col-lg-12">
+        <div class="row">
+            <div class="col-sm-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-sm-flex align-items-start justify-content-between mb-4">
+                            <div>
+                                <h3 class="card-title mb-1">Daftar Sertifikasi</h3>
                             </div>
                         </div>
+                            <div class="col-md-5 col-sm-12">
+                                <div class="row">
+                                    <div class="col">
+                                        <select class="form-control" id="filter-year" style="border-radius: 10px;">
+                                            <option value="">Pilih Tahun</option>
+                                            @for (int i = 0; i < 5; i++)
+                                            {
+                                                <option value="@(DateTime.Now.Year - i)">@(DateTime.Now.Year - i)</option>
+                                            }
+                                        </select>
+                                    </div>
+
+                                    <div class="col">
+                                        <select class="form-control" id="idprodi" style="border-radius: 10px;">
+                                            <option value="">Pilih Program Studi</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col">
+                                        <select class="form-control" id="filter-sertifikasi" style="border-radius: 10px;">
+                                            <option value="">Pilih Sertifikasi</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="chart-container">
+                                    <canvas id="myChart" width="200" height="60"></canvas>
+                                </div>
+                            </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <style>
-        #chart {
-            position: relative;
-            align-items: center;
-            /*        left: -140px; /* Sesuaikan nilai left sesuai kebutuhan */
-        }
-    </style>
+<style>
+    .chart-container {
+        position: relative;
+        width: 100%;
+        padding: 20px; /* Adjust padding as needed */
+        box-sizing: border-box;
+    }
 
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    #myChart {
+        width: 100%;
+        height: auto; /* Allow the height to adjust proportionally */
+        overflow: hidden; /* Prevent potential overflow issues */
+    }
+</style>
 
-    <script>
 
-        $(document).ready(function () {
-            $('#mytable').DataTable();
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+    loadProdi()
+    function loadProdi() {
+        var hostname = "https://localhost:44303/";
+        var url = hostname + "GetAllProdi";
+        var method = "GET";
+
+        $.ajax({
+            url: url,
+            method: method,
+            contentType: "application/json",
+            success: function (data) {
+                var list = data.data;
+                list.forEach(function (item) {
+                    var newOption = '<option value="' + item.idProdi + '">' + item.namaProdi + "</option>";
+                    $("#idprodi").append(newOption);
+                });
+            },
         });
+    }
 
-        function loadTable() {
-            var hostname = "http://localhost:5268/"
-            var url = hostname + "StatusData";
-            var method = "GET";
-            $.ajax({
-                url: url,
-                method: method,
-                contentType: "application/json",
-                success: function (data) {
-                    // Assuming data is an array of objects with 'namaProdi', 'kompeten', and 'tidakkompeten' properties
-
-                    // Extracting categories and series data from the API response
-                    var categories = data.map(item => item.namaProdi);
-                    var kompetenData = data.map(item => item.kompeten);
-                    var tidakKompetenData = data.map(item => item.tidakkompeten);
-
-                    // Updating ApexCharts options
-                    options.xaxis.categories = categories;
-                    options.series = [
-                        {
-                            name: 'Kompeten',
-                            type: 'column',
-                            data: kompetenData
-                        },
-                        {
-                            name: 'Tidak Kompeten',
-                            type: 'column',
-                            data: tidakKompetenData
-                        },
-                        {
-                            name: 'Line Chart', // Nama untuk grafik garis
-                            type: 'line', // Tipe grafik garis
-                            data: kompetenData
-                        }
-                    ];
-
-                    // Create a new ApexCharts instance or update the existing one
-                    if (chart) {
-                        chart.updateOptions(options, false, true);
-                    } else {
-                        chart = new ApexCharts(document.querySelector("#chart"), options);
-                        chart.render();
-                    }
-                }
-            });
-        }
-
-        // Call the loadTable function to fetch data and update the chart
-        loadTable();
+    $(document).ready(function () {
+        loadGrafikkeseluruhan();
+    });
 
 
-        var options = {
-            series: [],
-            chart: {
-                height: 350,
-                type: 'line',
-                stacked: false,
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                width: [1, 1, 4]
-            },
-            title: {
-                align: 'left',
-                offsetX: 110
-            },
-            xaxis: {
-                categories: [],
-            },
-            yaxis: [
-                {
-                    axisTicks: {
-                        show: true,
-                    },
-                    axisBorder: {
-                        show: true,
-                        color: '#008FFB'
-                    },
-                    labels: {
-                        style: {
-                            colors: '#008FFB',
-                        }
-                    },
-                    title: {
-                        style: {
-                            color: '#008FFB',
-                        }
-                    },
-                    tooltip: {
-                        enabled: true
-                    }
-                },
-            ],
-            tooltip: {
-                fixed: {
-                    enabled: true,
-                    position: 'topLeft', // topRight, topLeft, bottomRight, bottomLeft
-                    offsetY: 30,
-                    offsetX: 60
-                },
-            },
-            legend: {
-                horizontalAlign: 'left',
-                offsetX: 40
-            },
-            toolbar: {
-                show: false
-            },
-            contextMenu: {
-                show: false
+    $(document).ready(function () {
+        // Attach an event listener to the dropdown
+        $('#filter-year').change(function () {
+            // Get the selected year
+            const selectedYear = $(this).val();
+            var years = document.getElementById('filter-year').value;
+            var sertifikasi = document.getElementById('idprodi').value;
+
+            // Call the function to load data based on the selected year
+            if (selectedYear === "") {
+                // Call the function to load data for all years
+                loadGrafikkeseluruhan();
+            } else if (selectedYear !== "" && sertifikasi === "") {
+                // Call the function to load data based on the selected year
+                loadGrafikPemakaian(selectedYear);
+            } else {
+                loadGrafikserti(sertifikasi);
+                //loadGrafikpilihserti(sertifikasi,years);
             }
+        });
+    });
+
+    $(document).ready(function () {
+        // Attach an event listener to the dropdown
+        $('#idprodi').change(function () {
+            // Get the selected year
+            const sertifikasi = $(this).val();
+            var years = document.getElementById('filter-year').value;
+            // Call the function to load data based on the selected year
+            if (sertifikasi === "") {
+                loadGrafikkeseluruhan();
+            } else {
+                loadGrafikserti(sertifikasi);
+                //loadGrafikpilihserti(sertifikasi,years);
+            }
+
+        });
+    });
+</script>
+<script>
+
+    var chart;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const options = {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                x: {
+                    beginAtZero: true
+                },
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            }
+            // Add more options as needed
         };
 
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
-        chart.render();
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                datasets: [{}, {}],
+                labels: []
+            },
+            options: options
+        });
+            function updateChartSize() {
+                chart.resize();
+            }
+
+            // Update chart size when the window is resized
+            window.addEventListener('resize', function () {
+                updateChartSize();
+            });
+
+            // Initial call to set up the chart size
+            updateChartSize();
+    });
+
+
+
+    function loadGrafikkeseluruhan() {
+        var hostname = "https://localhost:44303/";
+        var url = hostname + "GetAllData";
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: 'json',
+            success: function (data) {
+                console.log("Data received:", data);
+                var dataSerti = data.data;
+
+                var namaProdi = [];
+                var kompeten = [];
+                var tidakkompeten = [];
+                var tidakhadir = [];
+
+                var i = 0;
+                dataSerti.forEach(function (item) {
+                    namaProdi[i] = item.namaProdi;
+                    kompeten[i] = item.kompeten;
+                    tidakkompeten[i] = item.tidakkompeten;
+                    tidakhadir[i] = item.tidakhadir;
+                    i++;
+                });
+                // Clear existing datasets
+                chart.data.datasets = [];
+
+                // Add bar datasets
+                chart.data.datasets.push({
+                    label: 'Kompeten (Bar)',
+                    type: 'bar',
+                    data: kompeten,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgb(54, 162, 235)',
+                    borderWidth: 1,
+                    order: 2 // specify the order for this dataset
+                });
+
+                chart.data.datasets.push({
+                    label: 'TidakKompeten',
+                    type: 'bar',
+                    data: tidakkompeten,
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgb(255, 159, 64)',
+                    borderWidth: 1,
+                    order: 2 // specify the order for this dataset
+                });
+
+                chart.data.datasets.push({
+                    label: 'TidakHadir',
+                    type: 'bar',
+                    data: tidakhadir,
+                    backgroundColor: 'rgba(255, 205, 86, 0.2)',
+                    borderColor: 'rgb(255, 205, 86)',
+                    borderWidth: 1,
+                    order: 2 // specify the order for this dataset
+                });
+
+                // Update x-axis categories
+                chart.data.labels = namaProdi;
+
+                // Update the chart
+                chart.update();
+            },
+
+            // Handle errors in the AJAX request
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                swal.fire("Error!", "Terjadi kesalahan saat mengambil data pemakaian!", "error");
+            }
+        });
+    }
+
+    function loadGrafikPemakaian(selectedYear) {
+        selectedYear = selectedYear || new Date().getFullYear();
+
+        var hostname = "https://localhost:44303/";
+        var url = hostname + "GetAllDataTahun?year=" + selectedYear;
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: 'json',
+            success: function (data) {
+                console.log(selectedYear);
+                console.log(data);
+                var dataSerti = data.data;
+
+                var namaProdi = [];
+                var kompeten = [];
+                var tidakkompeten = [];
+                var tidakhadir = [];
+
+                var i = 0;
+                dataSerti.forEach(function (item) {
+                    namaProdi[i] = item.namaProdi;
+                    kompeten[i] = item.kompeten;
+                    tidakkompeten[i] = item.tidakkompeten;
+                    tidakhadir[i] = item.tidakhadir;
+                    i++;
+                });
+                // Clear existing datasets
+                chart.data.datasets = [];
+
+                // Add bar datasets
+                chart.data.datasets.push({
+                    label: 'Kompeten (Bar)',
+                    type: 'bar',
+                    data: kompeten,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgb(54, 162, 235)',
+                    borderWidth: 1,
+                    order: 2 // specify the order for this dataset
+                });
+
+                chart.data.datasets.push({
+                    label: 'TidakKompeten',
+                    type: 'bar',
+                    data: tidakkompeten,
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgb(255, 159, 64)',
+                    borderWidth: 1,
+                    order: 2 // specify the order for this dataset
+                });
+
+                chart.data.datasets.push({
+                    label: 'TidakHadir',
+                    type: 'bar',
+                    data: tidakhadir,
+                    backgroundColor: 'rgba(255, 205, 86, 0.2)',
+                    borderColor: 'rgb(255, 205, 86)',
+                    borderWidth: 1,
+                    order: 2 // specify the order for this dataset
+                });
+
+                // Update x-axis categories
+                chart.data.labels = namaProdi;
+
+                // Update the chart
+                chart.update();
+            },
+
+            // Handle errors in the AJAX request
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                swal.fire("Error!", "Terjadi kesalahan saat mengambil data pemakaian!", "error");
+            }
+        });
+    }
+
+    function loadGrafikserti(sertifikasi) {
+        var hostname = "https://localhost:44303/";
+        var url = hostname + "GetAllDataSertifikasi?prodi=" + sertifikasi;
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: 'json',
+            // data: { year: selectedYear },
+            success: function (data) {
+                console.log(sertifikasi);
+
+                var dataSerti = data.data;
+
+                var namaSerti = [];
+                var kompeten = [];
+                var tidakkompeten = [];
+                var tidakhadir = [];
+
+                var i = 0;
+                dataSerti.forEach(function (item) {
+                    namaSerti[i] = item.namaSerti;
+                    kompeten[i] = item.kompeten;
+                    tidakkompeten[i] = item.tidakkompeten;
+                    tidakhadir[i] = item.tidakhadir;
+                    i++;
+                });
+                // Clear existing datasets
+                chart.data.datasets = [];
+
+                // Add bar datasets
+                chart.data.datasets.push({
+                    label: 'Kompeten (Bar)',
+                    type: 'bar',
+                    data: kompeten,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgb(54, 162, 235)',
+                    borderWidth: 1,
+                    order: 2 // specify the order for this dataset
+                });
+
+                chart.data.datasets.push({
+                    label: 'TidakKompeten',
+                    type: 'bar',
+                    data: tidakkompeten,
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgb(255, 159, 64)',
+                    borderWidth: 1,
+                    order: 2 // specify the order for this dataset
+                });
+
+                chart.data.datasets.push({
+                    label: 'TidakHadir',
+                    type: 'bar',
+                    data: tidakhadir,
+                    backgroundColor: 'rgba(255, 205, 86, 0.2)',
+                    borderColor: 'rgb(255, 205, 86)',
+                    borderWidth: 1,
+                    order: 2 // specify the order for this dataset
+                });
+
+                // Update x-axis categories
+                chart.data.labels = namaSerti;
+
+                // Update the chart
+                chart.update();
+            },
+
+            // Handle errors in the AJAX request
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                swal.fire("Error!", "Terjadi kesalahan saat mengambil data pemakaian!", "error");
+            }
+        });
+    }
+
+    function loadGrafikpilihserti(id_prodi, years) {
+        console.log(id_prodi, years);
+        var hostname = "https://localhost:44303/";
+        var url = hostname + "GetAllDataTahun?prodi=" + id_prodi + "&year=" + years;
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: 'json',
+            // data: { year: selectedYear },
+            success: function (data) {
+                console.log(id_prodi, years);
+
+                // Assuming data is directly used instead of newDataArray or dataSerti
+                console.log(data);
+                $('#filter-sertifikasi').empty();
+                $('#filter-sertifikasi').append("<option value=''>Pilih Sertifikasi</option>");
+
+                for (var i = 0; i < data.length; i++) {
+                    var id_sertifikasi = data[i].idsertifikat;
+                    var nama_sertifikasi = data[i].namaSerti;
+
+                    var newOption = "<option value='" + id_sertifikasi + "'>" + nama_sertifikasi + "</option>";
+                    $('#filter-sertifikasi').append(newOption);
+                }
+            },
+
+            // Handle errors in the AJAX request
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                swal.fire("Error!", "Terjadi kesalahan saat mengambil data pemakaian!", "error");
+            }
+        });
+    }
     </script>
 
-    <style>
+    @*<style>
         #chart {
             margin: 0 auto; /* This will center the chart horizontally */
         }
@@ -217,5 +507,5 @@
             max-width: 100%;
             overflow: hidden;
         }
-    </style>
+    </style>*@
 
