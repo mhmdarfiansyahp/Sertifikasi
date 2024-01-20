@@ -1,0 +1,287 @@
+﻿@{
+    ViewData["Title"] = "Sertifikasi";
+}
+
+<div class="content">
+    <form method="post">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="idprodi" class="control-label">Program Studi</label>
+                            <select name="idprodi" id="idprodi" class="form-control" required>
+                                <option value="">-- Pilih Program Studi --</option>
+                            </select>
+                        <span id="idprodiError" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Nama sertifikasi <span style="color: red;">*</span></label>
+                            <input class="form-control" name="namasertifikat" id="namasertifikat" required />
+                        <span id="namasertifikatError" class="text-danger"></span>
+                        </div>
+
+
+                    <div class="form-group">
+                        <label class="control-label">Tanggal sertifikasi <span style="color: red;">*</span></label>
+                        <input class="form-control" type="date" name="tanggal" id="tanggal" />
+                        <span id="tanggalError" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Lembaga sertifikasi <span style="color: red;">*</span></label>
+                        <input class="form-control" type="text" name="lembagaserti" id="lembagaserti" required />
+                        <span id="lembagaSertiError" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Level sertifikasi <span style="color: red;">*</span></label>
+                        <input class="form-control" type="text" name="levelserti" id="levelserti" required />
+                        <span id="levelSertiError" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Level KKNI <span style="color: red;">*</span></label>
+                        <input class="form-control" type="number" name="levelkkni" id="levelkkni" required />
+                        <span id="levelkkniError" class="text-danger"></span>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="control-label">Bukti Pendukung <span style="color: red;">*</span></label>
+                            <input class="form-control" type="file" name="buktipendukung" id="buktipendukung" multiple="multiple" accept=".pdf" required />
+                        <span id="buktipendukungError" class="text-danger"></span>
+                    </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Peserta Kompeten <span style="color: red;">*</span></label>
+                            <input class="form-control" type="number" name="kompeten" id="kompeten" required onchange="hitungJumlahPeserta()" />
+                        <span id="kompetenErorr" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Peserta Tidak Kompeten <span style="color: red;">*</span></label>
+                            <input class="form-control" type="number" name="tidakkompeten" id="tidakkompeten" required onchange="hitungJumlahPeserta()" />
+                            <span id="tidakkompetenErorr" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Peserta Tidak Hadir <span style="color: red;">*</span></label>
+                            <input class="form-control" type="number" name="tidakhadir" id="tidakhadir" required onchange="hitungJumlahPeserta()" />
+                        <span id="tidakhadirErorr" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="jumlah">Total Peserta <span style="color: red;">*</span></label>
+                            <input type="number" name="jumlah" class="form-control" id="jumlah" readonly>
+                        </div>
+                        <br />
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" onclick="simpan()">Simpan</button>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+<script>
+    loadProdi();
+
+    function loadProdi() {
+        var hostname = "https://localhost:44303/";
+        var url = hostname + "GetAllProdi";
+        var method = "GET";
+
+        $.ajax({
+            url: url,
+            method: method,
+            contentType: "application/json",
+            success: function (data) {
+                var list = data.data;
+                list.forEach(function (item) {
+                    var newOption = '<option value="' + item.idProdi + '">' + item.namaProdi + "</option>";
+                    $("#idprodi").append(newOption);
+                });
+            },
+        });
+    }
+
+    function simpan() {
+
+        $('.text-danger').text(""); // Hapus semua pesan kesalahan sebelum validasi
+
+        // Validasi Program Studi
+        var idProdi = $('#idprodi').val();
+        if (!idProdi) {
+            $('#idprodiError').text("Pilih Program Studi terlebih dahulu.");
+        }
+
+        // Validasi Nama Sertifikasi
+        var namaSertifikat = $('#namasertifikat').val();
+        if (!namaSertifikat) {
+            $('#namasertifikatError').text("Nama Sertifikasi Wajib Diisi.");
+        }
+
+        // Validasi Tanggal Sertifikasi
+        var tanggalSertifikasi = $('#tanggal').val();
+        if (!tanggalSertifikasi) {
+            $('#tanggalError').text("Tanggal Sertifikasi Wajib Diisi.");
+        }
+
+        // Validasi Lembaga Sertifikasi
+        var lembagaSertifikasi = $('#lembagaserti').val();
+        if (!lembagaSertifikasi) {
+            $('#lembagaSertiError').text("Lembaga Sertifikasi Wajib Diisi.");
+        }
+
+        // Validasi Level Sertifikasi
+        var levelSertifikasi = $('#levelserti').val();
+        if (!levelSertifikasi) {
+            $('#levelSertiError').text("Level Sertifikasi Wajib Diisi.");
+        }
+
+        // Validasi Level KKNI
+        var levelKKNI = $('#levelkkni').val();
+        if (!levelKKNI) {
+            $('#levelkkniError').text("Level KKNI Wajib Diisi.");
+        }
+
+        // Validasi Bukti Pendukung (PDF)
+        var buktiPendukungInput = $('#buktipendukung')[0];
+        var buktiPendukungFile = buktiPendukungInput.files[0];
+
+        if (!buktiPendukungFile) {
+            $('#buktipendukungError').text("File harus diunggah.");
+        } else {
+            var buktiPendukungFileExtension = buktiPendukungFile.name.split('.').pop().toLowerCase();
+            if (buktiPendukungFileExtension !== "pdf") {
+                $('#buktipendukungError').text("File harus berformat PDF.");
+            }
+        }
+
+        // Validasi Kompeten
+        var kompeten = $('#kompeten').val();
+        if (!kompeten) {
+            $('#kompetenErorr').text("Jumlah peserta kompeten harus diisi.");
+        }
+
+        // Validasi Tidak Kompeten
+        var tidakKompeten = $('#tidakkompeten').val();
+        if (!tidakKompeten) {
+            $('#tidakkompetenErorr').text("Jumlah peserta tidak kompeten harus diisi.");
+        }
+
+        // Validasi Tidak Hadir
+        var tidakHadir = $('#tidakhadir').val();
+        if (!tidakHadir) {
+            $('#tidakhadirErorr').text("Jumlah peserta tidak hadir harus diisi.");
+        }
+
+        // Hilangkan pesan kesalahan saat nilai field berubah
+        $('#idprodi, #namasertifikat, #tanggal, #lembagaserti, #levelserti, #levelkkni, #buktipendukung, #kompeten, #tidakkompeten, #tidakhadir').on('input', function () {
+            $('#' + this.id + 'Error').text("");
+        });
+
+        // Gabungkan pesan kesalahan
+        var errorMessage = $('#idprodiError').text() + " " +
+            $('#namasertifikatError').text() + " " +
+            $('#tanggalError').text() + " " +
+            $('#lembagaSertiError').text() + " " +
+            $('#levelSertiError').text() + " " +
+            $('#levelkkniError').text() + " " +
+            $('#buktipendukungError').text() + " " +
+            $('#kompetenErorr').text() + " " +
+            $('#tidakkompetenErorr').text() + " " +
+            $('#tidakhadirErorr').text();
+
+        // Tampilkan pesan kesalahan bersamaan di bawah tombol simpan
+        $('#errorMessage').text(errorMessage.trim());
+
+        // Jika terdapat pesan kesalahan, hentikan proses simpan
+        if (errorMessage.trim() !== "") {
+            return;
+        }
+
+        var hostname = "https://localhost:44303/";
+        var url = hostname + "InsertSertifikasi";
+        var method = "POST";
+        console.log(url);
+
+        var formData = new FormData();
+        formData.append("idprodi", $('#idprodi').val());
+        formData.append("namasertifikat", $('#namasertifikat').val());
+        formData.append("tanggal", $('#tanggal').val());
+        formData.append("lembagaserti", $('#lembagaserti').val());
+        formData.append("levelserti", $('#levelserti').val());
+        formData.append("levelkkni", $('#levelkkni').val());
+        formData.append("kompeten", $('#kompeten').val());
+        formData.append("tidakkompeten", $('#tidakkompeten').val());
+        formData.append("tidakhadir", $('#tidakhadir').val());
+        formData.append("jumlah", $('#jumlah').val());
+        formData.append("fileName", $("#buktipendukung")[0].files[0].name);
+        formData.append("file", $("#buktipendukung")[0].files[0]);
+
+        $.ajax({
+            url: url,
+            type: method,
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                //Menampilkan SweetAlert setelah data berhasil disimpan
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'Data berhasil ditambahkan!' + data,
+                }).then((result) => {
+                    // Redirect ke halaman Index setelah menekan OK di SweetAlert
+                    if (result.isConfirmed) {
+                        //alert("Data Berhasil Ditambahkan");
+                        window.location.href = "/Sertifikasi/Index";
+                    }
+                });
+                //downloadFile(data);
+                
+            },
+            xhr: function () {
+                var fileXhr = $.ajaxSettings.xhr();
+                if (fileXhr.upload) {
+                    $("progress").show();
+                    fileXhr.upload.addEventListener("progress", function (e) {
+                        if (e.lengthComputable) {
+                            $("#fileProgress").attr({
+                                value: e.loaded,
+                                max: e.total
+                            });
+                        }
+                    }, false);
+                }
+                return fileXhr;
+            },
+            error: function (error) {
+                console.error('Error:', error.errors);
+                // Tambahkan penanganan kesalahan jika diperlukan
+            }
+        });
+    }
+</script>
+
+<script>
+    // Fungsi untuk menghitung jumlah peserta
+    function hitungJumlahPeserta() {
+        // Ambil nilai dari ketiga kolom
+        var pesertaKompeten = parseInt(document.getElementById('kompeten').value) || 0;
+        var pesertaTidakKompeten = parseInt(document.getElementById('tidakkompeten').value) || 0;
+        var pesertaTidakHadir = parseInt(document.getElementById('tidakhadir').value) || 0;
+
+        // Hitung jumlah total
+        var totalPeserta = pesertaKompeten + pesertaTidakKompeten + pesertaTidakHadir;
+
+        // Tampilkan hasil di kolom keempat
+        document.getElementById('jumlah').value = totalPeserta;
+    }
+</script>

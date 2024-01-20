@@ -35,7 +35,7 @@
         var statusElement = document.getElementById("status");
 
         var idProdi = idProdiElement.value; // Assuming idProdi is a hidden input or another form element
-        var hostname = "http://localhost:5268/";
+        var hostname = "https://localhost:44303/";
         var url = hostname + "GetProdi?id=" + idProdi;
         var method = "GET";
 
@@ -76,7 +76,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 // Jika pengguna menekan "Ya", lanjutkan dengan pembaruan data
-                var hostname = "http://localhost:5268/";
+                var hostname = "https://localhost:44303/";
                 var url = hostname + "UpdateProdi";
                 var method = "PUT";
 

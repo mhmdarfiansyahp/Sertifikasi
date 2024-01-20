@@ -14,27 +14,31 @@ namespace Sertifikasi.Controllers
             _configuration = configuration;
             _baseaddress = _configuration["ApiSettings:BaseAddress"];
         }
-
-        [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            
-            IEnumerable<DetailSertiModel> listdispenser;
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(_baseaddress);
-                HttpResponseMessage response = await client.GetAsync("GetAllDetail");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    listdispenser = await response.Content.ReadAsAsync<IEnumerable<DetailSertiModel>>();
-
-                    return View(listdispenser);
-                }
-                /*return NotFound();*/
-                return RedirectToAction("Login", "Login");
-            }
+            return View();
         }
+        /*
+                [HttpGet]
+                public async Task<IActionResult> Index()
+                {
+
+                    IEnumerable<DetailSertiModel> listdispenser;
+                    using (var client = new HttpClient())
+                    {
+                        client.BaseAddress = new Uri(_baseaddress);
+                        HttpResponseMessage response = await client.GetAsync("GetAllDetail");
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            listdispenser = await response.Content.ReadAsAsync<IEnumerable<DetailSertiModel>>();
+
+                            return View(listdispenser);
+                        }
+                        *//*return NotFound();*//*
+                        return RedirectToAction("Login", "Login");
+                    }
+                }*/
 
         public IActionResult Create()
         {

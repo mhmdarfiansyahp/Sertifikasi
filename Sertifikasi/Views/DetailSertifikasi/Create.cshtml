@@ -88,7 +88,7 @@
     loadProdi();
 
     function loadProdi() {
-        var hostname = "http://localhost:5268/";
+        var hostname = "https://localhost:44303/";
         var url = hostname + "GetAllProdi";
         var method = "GET";
 
@@ -155,6 +155,8 @@
             isValid = false;
         }
 
+
+
         if (!isValid) {
             // Stop further processing if there are validation errors
             return;
@@ -165,7 +167,7 @@
         }
 
 
-        var hostname = "http://localhost:5268/";
+        var hostname = "https://localhost:44303/";
         var url = hostname + "InsertDetailSertifikasi";
         var method = "POST";
 
