@@ -200,7 +200,6 @@
                         window.location.href = "/DetailSertifikasi/Index";
                     }
                 });
-                downloadFile(data);
             },
             error: function (error) {
                 console.error('Error:', error);
@@ -208,9 +207,10 @@
             }
         });
 
-        var rootHost = "http://localhost:5268";
+      
 
          function uploadFile(file) {
+            var rootHost = "http://localhost:5268";
             var formData = new FormData();
             formData.append("file", file);
 
