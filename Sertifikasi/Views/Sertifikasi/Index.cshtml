@@ -74,10 +74,25 @@
 <script>
     loadTable();
 
+    function downloadPdf(pdfUrl) {
+        // Buka jendela baru untuk mengunduh PDF
+        window.open(pdfUrl, '_blank');
+    }
+
+    function downloadBuktiPendukung(fileName) {
+        var apiUrl = "https://localhost:44303/DownloadPdf"; // Sesuaikan dengan URL API Anda
+        var pdfUrl = apiUrl + "?fileName=" + fileName;
+
+        // Panggil fungsi downloadPdf untuk mengunduh PDF
+        downloadPdf(pdfUrl);
+    }
+
     function loadTable() {
-        var hostname = "https://localhost:44303/"
+        var hostname = "https://localhost:44303/";
         var url = hostname + "GetAllSertifikasi";
         var method = "GET";
+        var PdfPath = "https://localhost:44303/Content/Uploads/";
+
         $.ajax({
             url: url,
             method: method,
@@ -88,9 +103,7 @@
 
                 list.forEach(function (item) {
                     var options = { year: 'numeric', month: 'long', day: 'numeric' };
-
                     var formatter = new Intl.DateTimeFormat('id-ID', options);
-
                     var formattedTanggal = formatter.format(new Date(item.tanggal));
 
                     var newRow = '<tr>' +
@@ -101,13 +114,14 @@
                         '<td>' + item.lembaga + '</td>' +
                         '<td>' + item.level + '</td>' +
                         '<td>' + item.levelKKNI + '</td>' +
-                        '<td><a href="" class="btn btn-primary btn-download" download="' + item.buktipendukung + '"><i class="fa fa-download"></i> &nbsp;Download bukti pendukung</a></td>' +
+                        '<td><a href="#" class="btn btn-primary btn-download" onclick="downloadBuktiPendukung(\'' + item.buktipendukung + '\')"><i class="fa fa-download"></i> &nbsp;Download bukti pendukung</a></td>' +
+
                         '<td>' +
                         '<a href="" id="detail-{{ $item->id_detail_sertifikasi }}" class="btn btn-sm detail-button "' +
-                            'data-toggle="modal" data-target="#modal-detail" data-kom="'+ item.kompeten + '"' +
-                            'data-tkom="' + item.tidakkompeten + '"' +
-                            'data-tdkh="' + item.tidakhadir  + '"' +
-                            'data-jmlh="' + item.jumlah + '"> <i class="fas fa-list" aria-hidden="true"></i></a>' +
+                        'data-toggle="modal" data-target="#modal-detail" data-kom="' + item.kompeten + '"' +
+                        'data-tkom="' + item.tidakkompeten + '"' +
+                        'data-tdkh="' + item.tidakhadir + '"' +
+                        'data-jmlh="' + item.jumlah + '"> <i class="fas fa-list" aria-hidden="true"></i></a>' +
                         '<span style="margin-right: 10px;"></span>' +
                         '</td>' +
                         '</tr>';
