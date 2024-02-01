@@ -47,46 +47,7 @@
     loadTable();
 
     function loadTable() {
-        var hostname = "https://localhost:44303/";
-        var url = hostname + "GetAllDetailSertifikasi";
-        var method = "GET";
-
-        $.ajax({
-            url: url,
-            method: method,
-            contentType: "application/json",
-            success: function (data) {
-                var list = data.data;
-                var rowNumber = 1;
-
-                list.sort(function (a, b) {
-                    // Sort by Nama Sertifikasi in ascending order
-                    return ascendingOrder ? a.namaSerti.localeCompare(b.namaSerti) : b.namaSerti.localeCompare(a.namaSerti);
-                });
-
-                list.forEach(function (item) {
-                    // Format the date using toLocaleDateString()
-                    var options = { year: 'numeric', month: 'long', day: 'numeric' };
-                    var formatter = new Intl.DateTimeFormat('id-ID', options);
-                    var formattedTanggal = formatter.format(new Date(item.tanggal));
-
-                    var newRow = '<tr>' +
-                        '<td>' + rowNumber++ + '</td>' +
-                        '<td>' + item.namaSerti + '</td>' +
-                        '<td>' + formattedTanggal + '</td>' +
-                        '<td>' + item.lembaga + '</td>' +
-                        '<td>' + item.level + '</td>' +
-                        '<td>' + item.levelKKNI + '</td>' +
-                        '<td>' +
-                        '<a class="btn btn-sm btn-primary" href="/Sertifikasi/Update?id=' + item.iddetail + '"><i class="fas fa-light fa-pen-to-square"></i></a>' +
-                        '<span style="margin-right: 10px;"></span>' +
-                        '<button class="btn btn-sm btn-danger" value="' + item.idsertifikat + '" onclick="hapus(this.value)"><i class="fas fa-light fa-trash-can"></i></button>' +
-                        '</td>' +
-                        '</tr>';
-                    $('#tbody').append(newRow);
-                });
-            }
-        });
+        // ... Bagian AJAX request dan rendering data ...
     }
 
     // Function to toggle sorting order and re-render the table
@@ -108,6 +69,7 @@
         });
 
         // Render the filtered list
+        var rowNumber = 1; // Initialize row number
         filteredList.forEach(function (item) {
             // Format the date using toLocaleDateString()
             var options = { year: 'numeric', month: 'long', day: 'numeric' };
