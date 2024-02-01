@@ -5,11 +5,17 @@
 <div class="row">
     <div class="col-lg-12">
         <br />
-
         <div class="card-body">
             <br />
             <a asp-controller="DetailSertifikasi" class="btn btn-primary" asp-action="Create" title="Create Detail Sertifikasi">+ Create Detail Sertifikasi</a>
             <br />
+            <br />
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by Nama Sertifikasi">
+                </div>
+            </div>
             <br />
             <table class="table table-hover table-bordered table-condensed table-striped mx-auto text-center">
                 <thead>
@@ -29,15 +35,22 @@
         </div>
     </div>
 </div>
+<div class="row">
+    <div class="col-lg-12">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search by Nama Sertifikasi">
+    </div>
+</div>
 
 <script>
+    var ascendingOrder = true; // Initial sorting order
+
     loadTable();
-    var PdfPath : 
 
     function loadTable() {
-        var hostname = "https://localhost:44303/"
+        var hostname = "https://localhost:44303/";
         var url = hostname + "GetAllDetailSertifikasi";
         var method = "GET";
+
         $.ajax({
             url: url,
             method: method,
@@ -46,12 +59,15 @@
                 var list = data.data;
                 var rowNumber = 1;
 
+                list.sort(function (a, b) {
+                    // Sort by Nama Sertifikasi in ascending order
+                    return ascendingOrder ? a.namaSerti.localeCompare(b.namaSerti) : b.namaSerti.localeCompare(a.namaSerti);
+                });
+
                 list.forEach(function (item) {
                     // Format the date using toLocaleDateString()
                     var options = { year: 'numeric', month: 'long', day: 'numeric' };
-
                     var formatter = new Intl.DateTimeFormat('id-ID', options);
-
                     var formattedTanggal = formatter.format(new Date(item.tanggal));
 
                     var newRow = '<tr>' +
@@ -72,4 +88,46 @@
             }
         });
     }
+
+    // Function to toggle sorting order and re-render the table
+    function toggleSortOrder() {
+        ascendingOrder = !ascendingOrder;
+        $('#tbody').empty(); // Clear the existing table rows
+        loadTable(); // Reload the table with the updated sorting order
+    }
+
+    // Function to handle search
+    $('#searchInput').on('input', function () {
+        var searchTerm = $(this).val().toLowerCase();
+
+        $('#tbody').empty(); // Clear the existing table rows
+
+        // Filter the list based on the search term
+        var filteredList = data.data.filter(function (item) {
+            return item.namaSerti.toLowerCase().includes(searchTerm);
+        });
+
+        // Render the filtered list
+        filteredList.forEach(function (item) {
+            // Format the date using toLocaleDateString()
+            var options = { year: 'numeric', month: 'long', day: 'numeric' };
+            var formatter = new Intl.DateTimeFormat('id-ID', options);
+            var formattedTanggal = formatter.format(new Date(item.tanggal));
+
+            var newRow = '<tr>' +
+                '<td>' + rowNumber++ + '</td>' +
+                '<td>' + item.namaSerti + '</td>' +
+                '<td>' + formattedTanggal + '</td>' +
+                '<td>' + item.lembaga + '</td>' +
+                '<td>' + item.level + '</td>' +
+                '<td>' + item.levelKKNI + '</td>' +
+                '<td>' +
+                '<a class="btn btn-sm btn-primary" href="/Sertifikasi/Update?id=' + item.iddetail + '"><i class="fas fa-light fa-pen-to-square"></i></a>' +
+                '<span style="margin-right: 10px;"></span>' +
+                '<button class="btn btn-sm btn-danger" value="' + item.idsertifikat + '" onclick="hapus(this.value)"><i class="fas fa-light fa-trash-can"></i></button>' +
+                '</td>' +
+                '</tr>';
+            $('#tbody').append(newRow);
+        });
+    });
 </script>

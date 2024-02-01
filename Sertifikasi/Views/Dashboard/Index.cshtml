@@ -8,6 +8,8 @@
 }
 
 
+
+
 <br />
 <br>
 
@@ -48,9 +50,8 @@
                 <div class="col-12">
                     <div class="chart-container">
                         <canvas id="myChart" width="200" height="60"></canvas>
-                    </div>                
+                    </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -220,6 +221,14 @@
                 y: {
                     beginAtZero: true,
                     suggestedMax: 50,
+                    title: {
+                        display: true, // Menampilkan judul sumbu Y
+                        text: "Jumlah Sertifikasi",
+                        font: {
+                            size: 18, // Ukuran font judul sumbu Y
+                        },
+                        position: 'center'
+                    }
                 }
             },
             plugins: {
@@ -298,8 +307,8 @@
                     label: 'TidakKompeten',
                     type: 'bar',
                     data: tidakkompeten,
-                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                    borderColor: 'rgb(255, 159, 64)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)', 
+                    borderColor: 'rgb(255, 99, 132)', 
                     borderWidth: 1,
                     order: 2 // specify the order for this dataset
                 });
@@ -308,8 +317,8 @@
                     label: 'TidakHadir',
                     type: 'bar',
                     data: tidakhadir,
-                    backgroundColor: 'rgba(255, 205, 86, 0.2)',
-                    borderColor: 'rgb(255, 205, 86)',
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgb(255, 159, 64)',
                     borderWidth: 1,
                     order: 2 // specify the order for this dataset
                 });
@@ -376,8 +385,8 @@
                         label: 'TidakKompeten',
                         type: 'bar',
                         data: tidakkompeten,
-                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                        borderColor: 'rgb(255, 159, 64)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgb(255, 99, 132)',
                         borderWidth: 1,
                         order: 2 // specify the order for this dataset
                     });
@@ -386,8 +395,8 @@
                         label: 'TidakHadir',
                         type: 'bar',
                         data: tidakhadir,
-                        backgroundColor: 'rgba(255, 205, 86, 0.2)',
-                        borderColor: 'rgb(255, 205, 86)',
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgb(255, 159, 64)',
                         borderWidth: 1,
                         order: 2 // specify the order for this dataset
                     });
@@ -532,8 +541,8 @@
                         label: 'TidakKompeten',
                         type: 'bar',
                         data: tidakkompeten,
-                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                        borderColor: 'rgb(255, 159, 64)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgb(255, 99, 132)',
                         borderWidth: 1,
                         order: 2 // specify the order for this dataset
                     });
@@ -609,8 +618,8 @@
                         label: 'TidakKompeten',
                         type: 'bar',
                         data: tidakkompeten,
-                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                        borderColor: 'rgb(255, 159, 64)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgb(255, 99, 132)',
                         borderWidth: 1,
                         order: 2 // specify the order for this dataset
                     });

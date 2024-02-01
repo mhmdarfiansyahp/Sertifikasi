@@ -35,22 +35,29 @@
 
 
 
-                    <div class="form-group">
-                        <label class="control-label">Level sertifikasi <span style="color: red;">*</span></label>
-                        <select name="levelserti" id="levelserti" class="form-control" required>
-                            <option value="">-- Pilih Level Sertifikasi --</option>
-                            <option value="Lokal">Lokal</option>
-                            <option value="Internasional">Internasional</option>
-                        </select>
-                        <span id="levelSerti" class="text-danger"></span>
-                    </div>
-
-
                 <div class="form-group">
-                    <label class="control-label">Level KKNI <span style="color: red;">*</span></label>
-                    <input class="form-control" type="number" name="levelkkni" id="levelkkni" required />
-                    <span id="levelkkni" class="text-danger"></span>
+                    <label class="control-label">Level sertifikasi <span style="color: red;">*</span></label>
+                        <select name="levelserti" id="levelserti" class="form-control" type="" required>
+                            <option value="">Pilih Level</option>
+                            <option value="Lokal">Lokal</option>
+                            <option value="International">International</option>
+                            <!-- Tambahkan opsi sesuai dengan kebutuhan -->
+                        </select>
+                    <span id="levelSerti" class="text-danger"></span>
                 </div>
+
+
+                    <div class="form-group">
+                        <label class="control-label">Level KKNI <span style="color: red;">*</span></label>
+                        <select class="form-control" name="levelkkni" id="levelkkni" required>
+                            <option value="">Pilih Level KKNI</option>
+                            <option value="1">Level 1</option>
+                            <option value="2">Level 2</option>
+                            <option value="3">Level 3</option>
+                            <!-- Tambahkan opsi sesuai dengan kebutuhan -->
+                        </select>
+                        <span id="levelkkni" class="text-danger"></span>
+                    </div>
 
                  <div class="form-group">
                         <label class="control-label">Jumlah yang berkompeten <span style="color: red;">*</span></label>
