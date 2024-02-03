@@ -46,24 +46,6 @@
                         <span id="levelSertiError" class="text-danger"></span>
                     </div>
 
-
-                    <div class="form-group">
-                        <label class="control-label">Level KKNI <span style="color: red;">*</span></label>
-                        <select class="form-control" name="levelkkni" id="levelkkni" required>
-                            <option value="">Pilih Level KKNI</option>
-                            <option value="1">Level 1</option>
-                            <option value="2">Level 2</option>
-                            <option value="3">Level 3</option>
-                            <option value="4">Level 4</option>
-                            <option value="5">Level 5</option>
-                            <option value="6">Level 6</option>
-                            <option value="7">Level 7</option>
-                            <!-- Tambahkan opsi sesuai dengan kebutuhan -->
-                        </select>
-                        <span id="levelkkniError" class="text-danger"></span>
-                    </div>
-
-
                     <div class="form-group">
                         <label class="control-label">Bukti Pendukung <span style="color: red;">*</span></label>
                             <input class="form-control" type="file" name="buktipendukung" id="buktipendukung" multiple="multiple" accept=".pdf" required />
@@ -132,6 +114,8 @@
 
     function simpan() {
 
+        var status = "Aktif";
+
         $('.text-danger').text(""); // Hapus semua pesan kesalahan sebelum validasi
 
         // Validasi Program Studi
@@ -162,12 +146,6 @@
         var levelSertifikasi = $('#levelserti').val();
         if (!levelSertifikasi) {
             $('#levelSertiError').text("Level Sertifikasi Wajib Diisi.");
-        }
-
-        // Validasi Level KKNI
-        var levelKKNI = $('#levelkkni').val();
-        if (!levelKKNI) {
-            $('#levelkkniError').text("Level KKNI Wajib Diisi.");
         }
 
         // Validasi Bukti Pendukung (PDF)
@@ -202,7 +180,7 @@
         }
 
         // Hilangkan pesan kesalahan saat nilai field berubah
-        $('#idprodi, #namasertifikat, #tanggal, #lembagaserti, #levelserti, #levelkkni, #buktipendukung, #kompeten, #tidakkompeten, #tidakhadir').on('input', function () {
+        $('#idprodi, #namasertifikat, #tanggal, #lembagaserti, #levelserti, #buktipendukung, #kompeten, #tidakkompeten, #tidakhadir').on('input', function () {
             $('#' + this.id + 'Error').text("");
         });
 
@@ -244,6 +222,7 @@
         formData.append("jumlah", $('#jumlah').val());
         formData.append("fileName", $("#buktipendukung")[0].files[0].name);
         formData.append("file", $("#buktipendukung")[0].files[0]);
+        formData.append("status", status);
 
         $.ajax({
             url: url,

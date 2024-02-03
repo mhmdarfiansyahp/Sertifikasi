@@ -13,5 +13,12 @@ namespace Sertifikasi.Controllers
         {
             return View();
         }
+
+        public IActionResult Update(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+
+        }
     }
 }

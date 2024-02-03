@@ -7,20 +7,40 @@
     int no = 1;
 }
 
+<style>
+    .card {
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1); /* Menambahkan bayangan pada card */
+        transition: box-shadow 0.3s ease-in-out; /* Efek transisi saat hover */
 
+        /* Menambahkan padding agar card tidak menyentuh tepi layar */
+        padding: 10px; 
+        margin: 10px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+    }
 
-
+    .scrollstyle {
+        overflow-y: auto; /* Tambahkan pengguliran vertikal jika kontennya melebihi tinggi maksimal */
+    }
+</style>
 <br />
 <br>
 
 <div class="row">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header">
-                <h3>Grafik Keseluruhan Sertifikasi</h3>
+            <div class="card-header text-center">
+                <h2>Laporan Sertifikasi Mahasiswa Politeknik Astra</h2>
+            </div>
+            <br>
+            <br>
+            <div class="card-body">
+                <div class="col-md-5 col-sm-12">
+                    <h4>Grafik Keseluruhan Sertifikasi</h4>
+                </div>
             </div>
             <br />
-            <div class="card-body">
+            <div class="card-body scrollstyle">
                 <div class="col-md-5 col-sm-12">
                     <div class="row">
                         <div class="col">
@@ -35,16 +55,15 @@
 
                         <div class="col">
                             <select class="form-control" id="idprodi" style="border-radius: 10px;">
-                            <option value="">Pilih Program Studi</option>
+                                <option value="">Pilih Program Studi</option>
                             </select>
                         </div>
-                    
+
                         <div class="col">
                             <select class="form-control" id="filter-sertifikasi" style="border-radius: 10px;">
                                 <option value="">Pilih Sertifikasi</option>
                             </select>
                         </div>
-                        
                     </div>
                 </div>
                 <div class="col-12">
@@ -52,52 +71,157 @@
                         <canvas id="myChart" width="200" height="60"></canvas>
                     </div>
                 </div>
+                <br />
+                <br />
+
+                <div class="col-12">
+                    <table class="table table-hover table-bordered table-condensed table-striped mx-auto text-center scrollstyle">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="text-align: center;">No.</th>
+                                <th scope="col" style="text-align: center;">Nama Prodi</th>
+                                <th scope="col" style="text-align: center;">Nama Sertifikasi</th>
+                                <th scope="col" style="text-align: center;">Tanggal Sertifikasi</th>
+                                <th scope="col" style="text-align: center;">Lembaga</th>
+                                <th scope="col" style="text-align: center;">Level Sertifikasi</th>
+                                <th scope="col" style="text-align: center;">Status</th>
+                                <th scope="col" style="text-align: center;">Bukti Pendukung</th>
+                                <th scope="col" style="text-align: center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="modal fade" id="modal-detail">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h5 class="modal-title">Detail Data Sertifikasi </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <!-- Modal Body -->
+                            <div class="modal-body table-responsive">
+                                <table class="table table-bordered no-margin">
+                                    <tbody>
+
+                                        <tr>
+                                            <th>Peserta Kompeten</th>
+                                            <td><span id="modal-detail-kom"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Peserta Tidak Kompeten</th>
+                                            <td><span id="modal-detail-tkom"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Peserta Tidak Hadir</th>
+                                            <td><span id="modal-detail-tdkh"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Total Peserta</th>
+                                            <td><span id="modal-detail-jmlh"></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-@*<div id="chart"></div>
-
-<div class="row">
-    <div class="col-lg-12">
-        <br />
-
-        <div class="card-body">
-            <br />
-            <br />
-            <table id="mytable" class="table table-striped table-hover table-bordered table-condensed table-striped mx-auto text-center">
-                <thead>
-                    <tr>
-                        <th scope="col" style="text-align: center;">No.</th>
-                        <th scope="col" style="text-align: center;">Nama Prodi</th>
-                        <th scope="col" style="text-align: center;">Jumlah Sertifikasi</th>
-                        <th scope="col" style="text-align: center;">Jumlah Kompeten</th>
-                        <th scope="col" style="text-align: center;">Jumlah Tidak Kompeten</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody">
-                    @foreach (var detail in Model)
-                    {
-                        <tr>
-                            <td>@(no++)</td>
-                            <td>@detail.namaProdi</td>
-                            <td>@detail.jumlahserti</td>
-                            <td>@detail.jumlahKompeten</td>
-                            <td>@detail.jumlahtidakKom</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>*@
-
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
+<script>
+    loadTable();
+
+    function downloadPdf(pdfUrl) {
+        // Buka jendela baru untuk mengunduh PDF
+        window.open(pdfUrl, '_blank');
+    }
+
+    function downloadBuktiPendukung(fileName) {
+        var apiUrl = "https://localhost:44303/DownloadPdf"; // Sesuaikan dengan URL API Anda
+        var pdfUrl = apiUrl + "?fileName=" + fileName;
+
+        // Panggil fungsi downloadPdf untuk mengunduh PDF
+        downloadPdf(pdfUrl);
+    }
+
+    function loadTable() {
+        var hostname = "https://localhost:44303/";
+        var url = hostname + "GetAllSertifikasi";
+        var method = "GET";
+        var PdfPath = "https://localhost:44303/Content/Uploads/";
+
+        $.ajax({
+            url: url,
+            method: method,
+            contentType: "application/json",
+            success: function (data) {
+                var list = data.data;
+                var rowNumber = 1;
+
+                list.forEach(function (item) {
+                    var options = { year: 'numeric', month: 'long', day: 'numeric' };
+                    var formatter = new Intl.DateTimeFormat('id-ID', options);
+                    var formattedTanggal = formatter.format(new Date(item.tanggal));
+
+                    var newRow = '<tr>' +
+                        '<td>' + rowNumber++ + '</td>' +
+                        '<td>' + item.namaProdi + '</td>' +
+                        '<td>' + item.namaSerti + '</td>' +
+                        '<td>' + formattedTanggal + '</td>' +
+                        '<td>' + item.lembaga + '</td>' +
+                        '<td>' + item.level + '</td>' +
+                        '<td>' + item.status + '</td>' +
+                        '<td><a href="#" class="btn btn-primary btn-download" onclick="downloadBuktiPendukung(\'' + item.buktipendukung + '\')"><i class="fa fa-download"></i> &nbsp;Download bukti pendukung</a></td>' +
+
+                        '<td>' +
+                        '<a href="" id="detail-' + item.idsertifikat + '" class="btn btn-sm detail-button "' +
+                        'data-toggle="modal" data-target="#modal-detail" data-kom="' + item.kompeten + '"' +
+                        'data-tkom="' + item.tidakkompeten + '"' +
+                        'data-tdkh="' + item.tidakhadir + '"' +
+                        'data-jmlh="' + item.jumlah + '"> <i class="fas fa-list" aria-hidden="true"></i></a>' +
+                        '<span style="margin-right: 10px;"></span>' +
+                        '</td>' +
+                        '</tr>';
+                    $('#tbody').append(newRow);
+                });
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Menggunakan SweetAlert untuk konfirmasi penghapusan
+        document.querySelectorAll('.detail-button').forEach(button => {
+            button.addEventListener('click', function () {
+                const kompeten = this.getAttribute('data-kom');
+                const tkompten = this.getAttribute('data-tkom');
+                const tidakhadir = this.getAttribute('data-tdkh');
+                const jumlah = this.getAttribute('data-jmlh');
+
+                // Mengisi data modal dengan detail yang sesuai
+                document.getElementById('modal-detail-kom').innerText = kompeten;
+                document.getElementById('modal-detail-tkom').innerText = tkompten;
+                document.getElementById('modal-detail-tdkh').innerText = tidakhadir;
+                document.getElementById('modal-detail-jmlh').innerText = jumlah;
+
+                // Menampilkan modal
+                $('#modal-detail-').modal('show');
+            });
+        });
+    });
+</script>
 
 <script>
     loadProdi()
@@ -205,6 +329,7 @@
         });
     });
 </script>
+
 <script>
     
     var chart;
@@ -222,10 +347,10 @@
                     beginAtZero: true,
                     suggestedMax: 50,
                     title: {
-                        display: true, // Menampilkan judul sumbu Y
+                        display: true,
                         text: "Jumlah Sertifikasi",
                         font: {
-                            size: 18, // Ukuran font judul sumbu Y
+                            size: 18
                         },
                         position: 'center'
                     }
@@ -235,9 +360,19 @@
                 legend: {
                     display: true,
                     position: 'top'
+                },
+                datalabels: {
+                    align: 'center',
+                    anchor: 'center',
+                    color: 'black',
+                    font: {
+                        weight: 'bold'
+                    },
+                    formatter: function (value, context) {
+                        return value; // Menampilkan nilai data di tengah bar
+                    }
                 }
             }
-            // Add more options as needed
         };
 
         chart = new Chart(ctx, {
@@ -261,8 +396,6 @@
         // Initial call to set up the chart size
         updateChartSize();
     });
-
-
 
     function loadGrafikkeseluruhan() {
         var hostname = "https://localhost:44303/";

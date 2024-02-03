@@ -19,6 +19,7 @@
                     <tr>
                         <th scope="col" style="text-align: center;">No.</th>
                         <th scope="col" style="text-align: center;">Nama Prodi</th>
+                        <th scope="col" style="text-align: center;">Status Prodi</th>
                         <th scope="col" style="text-align: center;">Action</th>
                     </tr>
                 </thead>
@@ -48,10 +49,16 @@
                     var newRow = '<tr>' +
                         '<td>' + rowNumber++ + '</td>' +
                         '<td>' + item.namaProdi + '</td>' +
+                        '<td>' + item.status + '</td>' +
                         '<td>' +
                         '<a class="btn btn-sm btn-primary" href="/Prodi/Update?id=' + item.idProdi + '"><i class="fas fa-duotone fa-pen-to-square"></i></a>' + 
-                        '<span style="margin-right: 10px;"></span>' +
-                        '</td>' +
+                        '<span style="margin-right: 10px;"></span>' ;
+                    // Hanya tambahkan tombol hapus jika statusnya 'Aktif'
+                    if (item.status === 'Aktif') {
+                        newRow += '<button class="btn btn-sm btn-danger" value="' + item.idProdi + '" onclick="hapus(' + item.idProdi + ')"><i class="fas fa-trash"></i></button>';
+                    }
+
+                    newRow += '</td>' +
                         '</tr>';
                     $('#tbody').append(newRow);
                 });
@@ -74,7 +81,7 @@
                 // Jika pengguna mengonfirmasi
                 var hostname = "https://localhost:44303/";
                 var url = hostname + "DeleteProdi?id=" + id;
-                var method = "POST";
+                var method = "DELETE";
 
                 $.ajax({
                     url: url,

@@ -20,7 +20,7 @@
                         <th scope="col" style="text-align: center;">Tanggal Sertifikasi</th>
                         <th scope="col" style="text-align: center;">Lembaga</th>
                         <th scope="col" style="text-align: center;">Level Sertifikasi</th>
-                        <th scope="col" style="text-align: center;">Level KKNI</th>
+                        <th scope="col" style="text-align: center;">Status</th>
                         <th scope="col" style="text-align: center;">Bukti Pendukung</th>
                         <th scope="col" style="text-align: center;">Aksi</th>
                     </tr>
@@ -113,15 +113,18 @@
                         '<td>' + formattedTanggal + '</td>' +
                         '<td>' + item.lembaga + '</td>' +
                         '<td>' + item.level + '</td>' +
-                        '<td>' + item.levelKKNI + '</td>' +
+                        '<td>' + item.status + '</td>' +
                         '<td><a href="#" class="btn btn-primary btn-download" onclick="downloadBuktiPendukung(\'' + item.buktipendukung + '\')"><i class="fa fa-download"></i> &nbsp;Download bukti pendukung</a></td>' +
-
                         '<td>' +
-                        '<a href="" id="detail-{{ $item->id_detail_sertifikasi }}" class="btn btn-sm detail-button "' +
+                        '<a href="" id="detail-' + item.idsertifikat + '" class="btn btn-sm detail-button "' +
                         'data-toggle="modal" data-target="#modal-detail" data-kom="' + item.kompeten + '"' +
                         'data-tkom="' + item.tidakkompeten + '"' +
                         'data-tdkh="' + item.tidakhadir + '"' +
                         'data-jmlh="' + item.jumlah + '"> <i class="fas fa-list" aria-hidden="true"></i></a>' +
+                        '<span style="margin-right: 10px;"></span>' +
+                        '<a class="btn btn-sm btn-primary" href="/Sertifikasi/Update?id=' + item.idsertifikat + '"><i class="fas fa-duotone fa-pen-to-square"></i></a>' +
+                        '<span style="margin-right: 10px;"></span>' +
+                        '<button class="btn btn-sm btn-danger" value="' + item.idsertifikat + '" onclick="hapus(this.value)"><i class="fas fa-trash"></i></button>' +
                         '<span style="margin-right: 10px;"></span>' +
                         '</td>' +
                         '</tr>';
@@ -131,7 +134,7 @@
         });
     }
 
-    @*function hapus(id) {
+    function hapus(id) {
         Swal.fire({
             title: 'Apakah Anda yakin?',
             text: 'Data akan dihapus secara permanen!',
@@ -145,7 +148,7 @@
             if (result.isConfirmed) {
                 // Jika pengguna mengonfirmasi
                 var hostname = "https://localhost:44303/";
-                var url = hostname + "DeleteProdi?id=" + id;
+                var url = hostname + "DeleteSertifikasi?id=" + id;
                 var method = "POST";
 
                 $.ajax({
@@ -175,7 +178,7 @@
                 });
             }
         });
-    }*@
+    }
 </script>
 
 <script>
@@ -195,7 +198,7 @@
                 document.getElementById('modal-detail-jmlh').innerText = jumlah;
 
                 // Menampilkan modal
-                $('#modal-detail-' + idDetail).modal('show');
+                $('#modal-detail-').modal('show');
             });
         });
     });

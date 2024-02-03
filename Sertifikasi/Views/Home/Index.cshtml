@@ -4,9 +4,6 @@
 }
 
     <!-- ... tag-tag head lainnya ... -->
-
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.0/css/bootstrap.min.css">
-
 <style>
 
     body {
@@ -58,72 +55,129 @@
 
 
 
-<div class="container-fluid">
-    <div class="card-logo">
-        <img class="d-block w-100" src="~/Content/Images/gambar_banner.jpg" />
+<style>
+    .card {
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1); /* Menambahkan bayangan pada card */
+        transition: box-shadow 0.3s ease-in-out; /* Efek transisi saat hover */
+        /* Menambahkan padding agar card tidak menyentuh tepi layar */
+        padding: 10px;
+        margin: 10px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+    }
 
-        <div class="row">
-            <div class="col-lg-4" style="text-align: center; padding: 40px 0px;">
-                <img src="~/content/images/IMG_LogoTransformationInHarmony.png" class="wow fadeInUp fast" style="width: 60%; visibility: visible; animation-name: fadeInUp; animation-iteration-count: 1;">
-            </div>
-            <div class="col-lg-4" style="text-align: center; padding: 40px 0px;">
-                <img src="~/content/images/IMG_LogoKampusMerdeka.png" class="wow fadeInUp fast" style="width: 30%; visibility: visible; animation-name: fadeInUp; animation-iteration-count: 1;">
-            </div>
-            <div class="col-lg-4" style="text-align: center; padding: 40px 0px;">
-                <img src="~/content/images/IMG_LogoSatuIndonesia.png" class="wow fadeInUp fast" style="width: 40%; visibility: visible; animation-name: fadeInUp; animation-iteration-count: 1;">
-            </div>
-        </div>
-    </div>
-  
+    .scrollstyle {
+        overflow-y: auto; /* Tambahkan pengguliran vertikal jika kontennya melebihi tinggi maksimal */
+    }
+</style>
 
-        <!-- Bagian Tabel Pasien -->
-    <div class="col-lg-12">
-        <div class="row">
-            <div class="col-sm-12 grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Grafik Sertifikasi Keseluruhan</h3>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>Laporan Sertifikasi Mahasiswa Politeknik Astra</h2>
+            </div>
+            <br>
+            <div class="card-body">
+                <div class="col-md-5 col-sm-12">
+                    <h4>Grafik Keseluruhan Sertifikasi</h4>
+                </div>
+            </div>
+            <div class="card-body scrollstyle">
+                <div class="col-md-5 col-sm-12">
+                    <div class="row">
+                        <div class="col">
+                            <select class="form-control" id="filter-year" style="border-radius: 10px;" onchange="filterTable()">
+                                <option value="">Pilih Tahun</option>
+                                @for (int i = 0; i < 5; i++)
+                                {
+                                    <option value="@(DateTime.Now.Year - i)">@(DateTime.Now.Year - i)</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col">
+                            <select class="form-control" id="idprodi" style="border-radius: 10px;">
+                                <option value="">Pilih Program Studi</option>
+                            </select>
+                        </div>
+
+                        <div class="col">
+                            <select class="form-control" id="filter-sertifikasi" style="border-radius: 10px;">
+                                <option value="">Pilih Sertifikasi</option>
+                            </select>
+                        </div>
                     </div>
-                    <br />
-                    <div class="card-body">
-                            <div class="col-md-5 col-sm-12">
-                                <div class="row">
-                                    <div class="col">
-                                        <select class="form-control" id="filter-year" style="border-radius: 10px;">
-                                            <option value="">Pilih Tahun</option>
-                                            @for (int i = 0; i < 5; i++)
-                                            {
-                                                <option value="@(DateTime.Now.Year - i)">@(DateTime.Now.Year - i)</option>
-                                            }
-                                        </select>
-                                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="chart-container">
+                        <canvas id="myChart" width="200" height="60"></canvas>
+                    </div>
+                </div>
+                <br />
 
-                                    <div class="col">
-                                        <select class="form-control" id="idprodi" style="border-radius: 10px;">
-                                            <option value="">Pilih Program Studi</option>
-                                        </select>
-                                    </div>
+                <div class="col-12">
+                    <table class="table table-hover table-bordered table-condensed table-striped mx-auto text-center scrollstyle">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="text-align: center;">No.</th>
+                                <th scope="col" style="text-align: center;">Nama Prodi</th>
+                                <th scope="col" style="text-align: center;">Nama Sertifikasi</th>
+                                <th scope="col" style="text-align: center;">Tanggal Sertifikasi</th>
+                                <th scope="col" style="text-align: center;">Lembaga</th>
+                                <th scope="col" style="text-align: center;">Level Sertifikasi</th>
+                                <th scope="col" style="text-align: center;">Status</th>
+                                <th scope="col" style="text-align: center;">Bukti Pendukung</th>
+                                <th scope="col" style="text-align: center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+                        </tbody>
+                    </table>
+                </div>
 
-                                    <div class="col">
-                                        <select class="form-control" id="filter-sertifikasi" style="border-radius: 10px;">
-                                            <option value="">Pilih Sertifikasi</option>
-                                        </select>
-                                    </div>
-
-                                </div>
+                <div class="modal fade" id="modal-detail">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h5 class="modal-title">Detail Data Sertifikasi </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
-                            <div class="col-12">
-                                <div class="chart-container">
-                                    <canvas id="myChart" width="200" height="60"></canvas>
-                                </div>
+
+                            <!-- Modal Body -->
+                            <div class="modal-body table-responsive">
+                                <table class="table table-bordered no-margin">
+                                    <tbody>
+
+                                        <tr>
+                                            <th>Peserta Kompeten</th>
+                                            <td><span id="modal-detail-kom"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Peserta Tidak Kompeten</th>
+                                            <td><span id="modal-detail-tkom"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Peserta Tidak Hadir</th>
+                                            <td><span id="modal-detail-tdkh"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Total Peserta</th>
+                                            <td><span id="modal-detail-jmlh"></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <style>
     .chart-container {
         position: relative;
@@ -142,6 +196,88 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    loadTable();
+
+    function downloadPdf(pdfUrl) {
+        // Buka jendela baru untuk mengunduh PDF
+        window.open(pdfUrl, '_blank');
+    }
+
+    function downloadBuktiPendukung(fileName) {
+        var apiUrl = "https://localhost:44303/DownloadPdf"; // Sesuaikan dengan URL API Anda
+        var pdfUrl = apiUrl + "?fileName=" + fileName;
+
+        // Panggil fungsi downloadPdf untuk mengunduh PDF
+        downloadPdf(pdfUrl);
+    }
+
+    function loadTable() {
+        var hostname = "https://localhost:44303/";
+        var url = hostname + "GetAllSertifikasi";
+        var method = "GET";
+        var PdfPath = "https://localhost:44303/Content/Uploads/";
+
+        $.ajax({
+            url: url,
+            method: method,
+            contentType: "application/json",
+            success: function (data) {
+                var list = data.data;
+                var rowNumber = 1;
+
+                list.forEach(function (item) {
+                    var options = { year: 'numeric', month: 'long', day: 'numeric' };
+                    var formatter = new Intl.DateTimeFormat('id-ID', options);
+                    var formattedTanggal = formatter.format(new Date(item.tanggal));
+
+                    var newRow = '<tr>' +
+                        '<td class="align-middle text-center">' + rowNumber++ + '</td>' +
+                        '<td class="align-middle text-center">' + item.namaProdi + '</td>' +
+                        '<td class="align-middle text-center">' + item.namaSerti + '</td>' +
+                        '<td class="align-middle text-center">' + formattedTanggal + '</td>' +
+                        '<td class="align-middle text-center">' + item.lembaga + '</td>' +
+                        '<td class="align-middle text-center">' + item.level + '</td>' +
+                        '<td class="align-middle text-center">' + item.status + '</td>' +
+                        '<td class="align-middle text-center"><a href="#" class="btn btn-primary btn-download" onclick="downloadBuktiPendukung(\'' + item.buktipendukung + '\')"><i class="fa fa-download"></i> &nbsp;Download bukti pendukung</a></td>' +
+
+                        '<td  class="align-middle text-center">' +
+                        '<a href="" id="detail-' + item.idsertifikat + '" class="btn btn-sm detail-button "' +
+                        'data-toggle="modal" data-target="#modal-detail" data-kom="' + item.kompeten + '"' +
+                        'data-tkom="' + item.tidakkompeten + '"' +
+                        'data-tdkh="' + item.tidakhadir + '"' +
+                        'data-jmlh="' + item.jumlah + '"> <i class="fas fa-list" aria-hidden="true"></i></a>' +
+                        '<span style="margin-right: 10px;"></span>' +
+                        '</td>' +
+                        '</tr>';
+                    $('#tbody').append(newRow);
+                });
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Menggunakan SweetAlert untuk konfirmasi penghapusan
+        document.querySelectorAll('.detail-button').forEach(button => {
+            button.addEventListener('click', function () {
+                const kompeten = this.getAttribute('data-kom');
+                const tkompten = this.getAttribute('data-tkom');
+                const tidakhadir = this.getAttribute('data-tdkh');
+                const jumlah = this.getAttribute('data-jmlh');
+
+                // Mengisi data modal dengan detail yang sesuai
+                document.getElementById('modal-detail-kom').innerText = kompeten;
+                document.getElementById('modal-detail-tkom').innerText = tkompten;
+                document.getElementById('modal-detail-tdkh').innerText = tidakhadir;
+                document.getElementById('modal-detail-jmlh').innerText = jumlah;
+
+                // Menampilkan modal
+                $('#modal-detail-').modal('show');
+            });
+        });
+    });
+</script>
 
 <script>
     loadProdi()
