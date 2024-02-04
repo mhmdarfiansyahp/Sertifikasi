@@ -1,4 +1,7 @@
-﻿@{
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
     ViewData["Title"] = "Pengguna";
 }
 
@@ -14,7 +17,7 @@
 
         <div class="card-body">
 
-            <a asp-controller="Pengguna" class="btn btn-primary" asp-action="TambahPengguna" title="Tambah Pengguna"><i class="fa fa-plus"></i>&nbsp;Tambah Pengguna</a>
+            <a asp-controller="Pengguna" class="btn btn-primary" asp-action="Create" title="Tambah Pengguna"><i class="fa fa-plus"></i>&nbsp;Tambah Pengguna</a>
             <br />
             <br />
             <table class="table table-hover table-bordered table-condensed table-striped mx-auto text-center">
@@ -23,6 +26,7 @@
                         <th scope="col" style="text-align: center;">No.</th>
                         <th scope="col" style="text-align: center;">Username</th>
                         <th scope="col" style="text-align: center;">Role</th>
+                        <th scope="col" style="text-align: center;">Status</th>
                         <th scope="col" style="text-align: center;">Action</th>
                     </tr>
                 </thead>
@@ -46,15 +50,13 @@
         var hostname = "https://localhost:44303/";
         var url = hostname + "GetAllPengguna";
         var method = "GET";
-
-        // Ambil token akses dari tempat penyimpanan yang sesuai
-        var accessToken = getAccessToken();
+        var jwtToken = "@ViewBag.JwtToken";
 
         $.ajax({
             url: url,
             method: method,
             headers: {
-                'Authorization': 'Bearer ' + accessToken
+                'Authorization': 'Bearer ' + jwtToken
             },
             contentType: "application/json",
             success: function (data) {
@@ -66,14 +68,15 @@
                         '<td>' + rowNumber++ + '</td>' +
                         '<td>' + item.username + '</td>' +
                         '<td>' + item.role + '</td>' +
+                        '<td>' + item.status + '</td>' +
                         '<td>' +
-                        '<a class="btn btn-sm btn-primary" href="/Pengguna/UbahAkun?id=' + item.id + '"><i class="fas fa-duotone fa-pen-to-square"></i></a>' +
+                        '<a class="btn btn-sm btn-primary" href="/Pengguna/Update?iduser=' + item.iduser + '"><i class="fas fa-duotone fa-pen-to-square"></i></a>' +
                         '<span style="margin-right: 10px;"></span>' +
-                        '<button class="btn btn-sm btn-danger" onclick="hapus(' + item.id + ')"><i class="fas fa-duotone fa-trash"></i></button>' +
+                        '<button class="btn btn-sm btn-danger" onclick="hapus(' + item.iduser + ')"><i class="fas fa-duotone fa-triangle-exclamation" style="color: #ffffff;"></i></button>' +
                         '</td>' +
                         '</tr>';
                     $('#tbody').append(newRow);
-                }
+                }); 
             },
             error: function (xhr, textStatus, errorThrown) {
                 console.error("Error fetching data:", errorThrown);
@@ -88,28 +91,28 @@
     function hapus(id) {
         Swal.fire({
             title: 'Apakah Anda yakin?',
-            text: 'Data akan dihapus secara permanen!',
+            text: 'Status akan diubah menjadi tidak aktif!',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Ya, Hapus!',
+            confirmButtonText: 'Ya!',
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
                 // Jika pengguna mengonfirmasi
                 var hostname = "https://localhost:44303/";
-                var url = hostname + "HapusPengguna?id=" + id;
-                var method = "POST";
+                var url = hostname + "DeletePengguna?id=" + id;
+                var method = "DELETE";
+                var jwtToken = "@ViewBag.JwtToken";
 
-                // Ambil token akses dari tempat penyimpanan yang sesuai
-                var accessToken = getAccessToken();
+                console.log(jwtToken);
 
                 $.ajax({
                     url: url,
                     method: method,
                     headers: {
-                        'Authorization': 'Bearer ' + accessToken
+                        'Authorization': 'Bearer ' + jwtToken
                     },
                     contentType: "application/json",
                     success: function (data) {
@@ -126,6 +129,7 @@
                         Swal.fire({
                             title: 'Error!',
                             text: 'Terjadi kesalahan saat menghapus data.',
+                            cancelButtonText: 'Batal',
                             icon: 'error',
                             showConfirmButton: false // Menyembunyikan tombol konfirmasi
                         });

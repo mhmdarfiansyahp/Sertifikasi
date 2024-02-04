@@ -26,14 +26,14 @@
 
     <div class="form-group">
         <label class="control-label">Lembaga sertifikasi <span style="color: red;">*</span></label>
-        <input class="form-control" type="text" name="lembagaserti" id="lembagaserti" required />
+        <input class="form-control" type="text" name="lembaga" id="lembaga" required />
         <span id="lembagaSertiError" class="text-danger"></span>
     </div>
 
 
     <div class="form-group">
         <label class="control-label">Level sertifikasi <span style="color: red;">*</span></label>
-        <select name="levelserti" id="levelserti" class="form-control" type="" required>
+        <select name="level" id="level" class="form-control" type="" required>
             <option value="">Pilih Level</option>
             <option value="Lokal">Lokal</option>
             <option value="International">International</option>
@@ -72,7 +72,7 @@
     </div>
     <div class="form-group">
         <label for="status" class="control-label">Status Sertifikasi</label>
-        <select name="status" id="status" class="form-control" required>
+        <select name="Status" id="Status" class="form-control" required>
             <option selected disabled>-- Pilih Status --</option>
             <option value="Aktif">Aktif</option>
             <option value="Tidak Aktif">Tidak Aktif</option>
@@ -82,120 +82,146 @@
     <div class="form-group">
         <button type="submit" class="btn btn-primary" onclick="simpan()">Simpan</button>
     </div>
+
+    <script>
+        loadProdi();
+        loadData();
+
+        function loadProdi() {
+            var hostname = "https://localhost:44303/";
+            var url = hostname + "GetAllProdi";
+            var method = "GET";
+
+            $.ajax({
+                url: url,
+                method: method,
+                contentType: "application/json",
+                success: function (data) {
+                    var list = data.data;
+                    list.forEach(function (item) {
+                        if (item.status === "Aktif") {
+                            var newOption = '<option value="' + item.idProdi + '">' + item.namaProdi + "</option>";
+                            $("#idprodi").append(newOption);
+                        }
+                    });
+                },
+            });
+        }
+
+        function loadData() {
+            var idSertifikatElement = $("#idsertifikat");
+            var idProdiElement = $("#idprodi");
+            var namaSertiElement = $("#namaSerti");
+            var tanggalElement = $("#tanggal");
+            var lembagaElement = $("#lembaga");
+            var levelElement = $("#level");
+            var kompetenElement = $("#kompeten");
+            var tidakKompetenElement = $("#tidakkompeten");
+            var tidakHadirElement = $("#tidakhadir");
+            var jumlahElement = $("#jumlah");
+            var statusElement = $("#Status");
+
+            var idSertifikat = idSertifikatElement.val();
+            var hostname = "https://localhost:44303/";
+            var url = hostname + "GetSertifikasi?id=" + idSertifikat;
+            var method = "GET";
+
+            $.ajax({
+                url: url,
+                method: method,
+                contentType: "application/json",
+                success: function (data) {
+                    var item = data.data;
+                    idProdiElement.val(item.idProdi);
+                    namaSertiElement.val(item.namaSerti);
+                    tanggalElement.val(item.tanggal);
+                    lembagaElement.val(item.lembaga);
+                    levelElement.val(item.level);
+                    kompetenElement.val(item.kompeten);
+                    tidakKompetenElement.val(item.tidakkompeten);
+                    tidakHadirElement.val(item.tidakhadir);
+                    jumlahElement.val(item.jumlah);
+                    statusElement.val(item.Status);
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+                    // Tangani kesalahan jika diperlukan
+                }
+            });
+        }
+
+        function simpan() {
+            var idProdi = $("#idprodi").val();
+            var id = $("#idsertifikat").val();
+            var namaSerti = $("#namaSerti").val();
+            var tanggal = $("#tanggal").val();
+            var lembaga = $("#lembaga").val();
+            var level = $("#level").val();
+            var buktipendukung = $("#buktipendukung").val();
+            var kompeten = $("#kompeten").val();
+            var tidakkompeten = $("#tidakkompeten").val();
+            var tidakhadir = $("#tidakhadir").val();
+            var jumlah = $("#jumlah").val();
+            var status = $("#status").val();
+
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: 'Apakah Anda yakin ingin memperbarui data?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var hostname = "https://localhost:44303/";
+                    var url = hostname + "UpdateSertifikasi";
+                    var method = "PUT";
+
+                    var input = {
+                        idsertifikat: id,
+                        idProdi: idProdi,
+                        namaSerti: namaSerti,
+                        tanggal: tanggal,
+                        lembaga: lembaga,
+                        level: level,
+                        buktipendukung: buktipendukung,
+                        kompeten: kompeten,
+                        tidakkompeten: tidakkompeten,
+                        tidakhadir: tidakhadir,
+                        jumlah: jumlah,
+                        status: status,
+                    };
+
+                    var data = JSON.stringify(input);
+
+                    $.ajax({
+                        url: url,
+                        method: method,
+                        data: data,
+                        contentType: "application/json",
+                        success: function (data) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Data berhasil diperbarui!',
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = "/Sertifikasi/Index";
+                                }
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error: " + error);
+                            alert("Terjadi kesalahan saat memperbarui data.");
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+
 </div>
 
-<script>
-    loadData();
 
-    function loadData() {
-        var idProdiElement = document.getElementById("idprodi");
-        var namaSertiElement = document.getElementById("namaProdi");
-        var tanggalElement = document.getElementById("tanggal");
-        var lembagaElement = document.getElementById("lembagaserti");
-        var levellement = document.getElementById("levelserti");
-        var buktipendukungElement = document.getElementById("buktipendukung");
-        var kompetenElement = document.getElementById("kompeten");
-        var tidakkompetenlement = document.getElementById("tidakkompeten");
-        var tidakhadirElement = document.getElementById("tidakhadir");
-        var jumlahElement = document.getElementById("jumlah");
-        var statusElement = document.getElementById("status");
-        var namaProdiElement = document.getElementById("idprodi");
-       
-
-        var idSerti = idSertiElement.value; // Assuming idProdi is a hidden input or another form element
-        var hostname = "https://localhost:44303/";
-        var url = hostname + "getSertifikasi?idsertifikat=" + idSerti;
-        var method = "GET";
-
-        $.ajax({
-            url: url,
-            method: method,
-            contentType: "application/json",
-            success: function (data) {
-                var item = data.data;
-                namaProdiElement.value = item.namaProdi;
-                statusElement.value = item.status;
-            },
-            error: function (error) {
-                console.error('Error:', error);
-                // Handle errors if necessary
-            }
-        });
-    }
-</script>
-
-<script>
-    function simpan() {
-        var idProdi = document.getElementById("idProdi").value;
-        var namaSerti = document.getElementById("namaProdi").value;
-        var tanggal = document.getElementById("tanggal").value;
-        var lembaga = document.getElementById("lembagaserti").value;
-        var level = document.getElementById("levelserti").value;
-        var buktipendukung = document.getElementById("buktipendukung").value;
-        var kompeten = document.getElementById("kompeten").value;
-        var tidakkompeten = document.getElementById("tidakkompeten").value;
-        var tidakhadir = document.getElementById("tidakhadir").value;
-        var jumlah = document.getElementById("jumlah").value;
-        var status = document.getElementById("status").value;
-
-        // Menampilkan SweetAlert konfirmasi
-        Swal.fire({
-            title: 'Konfirmasi',
-            text: 'Apakah Anda yakin ingin memperbarui data?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Jika pengguna menekan "Ya", lanjutkan dengan pembaruan data
-                var hostname = "https://localhost:44303/";
-                var url = hostname + "UpdateSertifikasi";
-                var method = "PUT";
-
-                var input = {
-                    idsertifikat: id, // Mengirim ID yang ingin diupdate.
-                    idProdi: idProdi,
-                    namaSerti: namaSerti,
-                    tanggal:tanggal,
-                    lembaga:lemabaga,
-                    level:level,
-                    buktipendukung:bukti,
-                    kompeten:kompeten,
-                    tidakkompeten:tidakkompeten,
-                    tidakhadir:tidakhadir,
-                    jumlah:jumlah,
-                    status:status,
-                };
-
-                var data = JSON.stringify(input);
-
-                $.ajax({
-                    url: url,
-                    method: method,
-                    data: data,
-                    contentType: "application/json",
-                    success: function (data) {
-                        // Menampilkan SweetAlert setelah data berhasil diperbarui
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil',
-                            text: 'Data berhasil diperbarui!',
-                        }).then((result) => {
-                            // Redirect ke halaman Index setelah menekan OK di SweetAlert
-                            if (result.isConfirmed) {
-                                window.location.href = "/Sertifikasi/Index";
-                            }
-                        });
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Error: " + error);
-                        alert("Terjadi kesalahan saat memperbarui data.");
-                    }
-                });
-            }
-        });
-    }
-</script>

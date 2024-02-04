@@ -3,7 +3,7 @@
     Layout = "~/Views/Shared/Layoutlogin.cshtml";
 }
 
-<form method="post" asp-action="Login" asp-controller="Login" class="polman-form-login">
+<form method="post" id="loginForm" class="polman-form-login">
     <h4>Selamat Datang</h4>
     <hr />
     @if (TempData["Notification"] != null)
@@ -28,9 +28,13 @@
 
 
     <div class="form-group">
-        <label for="txtUsername">
+@*        <label for="txtUsername">
             Nama Akun
             <span style="color: red;">*</span>
+        </label>*@
+        <label for="username">
+            Nama Akun<span style="color: red;">*</span>
+            <span id="usernameNull" style="color:Red;display:none;"> Harus Diisi!</span><br />
         </label>
         <input type="text" id="username" name="username" maxlength="10" class="form-control" required=""
                oninvalid="this.setCustomValidity('Field Nama tidak boleh kosong')"
@@ -38,9 +42,13 @@
     </div>
 
     <div class="form-group">
-        <label for="txtPassword">
+@*        <label for="txtPassword">
             Kata Sandi
             <span style="color: red;">*</span>
+        </label>*@
+        <label for="password">
+            Kata Sandi<span style="color: red;">*</span>
+            <span id="passwordNull" style="color:Red;display:none;"> Harus Diisi!</span><br />
         </label>
         <input id="password" type="password" name="password" class="form-control" required
                oninvalid="this.setCustomValidity('Field Password tidak boleh kosong')"
@@ -74,3 +82,64 @@
 
     </style>
 </form>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<script>
+    $(document).ready(function () {
+        console.log("Login.........");
+        $('#loginForm').submit(function (e) {
+            e.preventDefault();
+
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+
+            if ((username == null || username == "") && (password == null || password == "")) {
+                $('#usernameNull').show();
+                $('#passwordNull').show();
+                return;
+            } else {
+                $('#usernameNull').hide();
+                $('#passwordNull').hide();
+            }
+            if (username == null || username == "") {
+                $('#usernameNull').show();
+                return;
+            } else {
+                $('#usernameNull').hide();
+            }
+            if (password == null || password == "") {
+                $('#passwordNull').show();
+                return;
+            } else {
+                $('#passwordNull').hide();
+            }
+            var input = {
+                username : username,
+                password : password
+            }
+
+            var dataInput = JSON.stringify(input);
+            console.log(dataInput);
+
+            $.ajax({
+                url: '/Login/Login',
+                method: 'POST',
+                data: input,
+                success: function (data) {
+                    if (data.success) {
+                        // Display success message and redirect
+                        swal("Berhasil!", data.message, "success").then(() => {
+                            window.location.href = '/Dashboard/Index';
+                        });
+                    } else {
+                        
+                        swal("Gagal!", data.message + " Code : " + data.code, "error")
+                    }
+                },
+                error: function (data) {
+                    // Handle AJAX error if any
+                    swal("Gagal!", "Error", "error");
+                }
+            });
+        });
+    });
+</script>

@@ -116,6 +116,7 @@
                 <a asp-controller="Sertifikasi" asp-action="Index" class='list-group-item list-group-item-action <%: Page.Title == "Laporan Kuesioner Excel" ? "polman-menu-active" : "" %>' style='border-radius: 0px; border: none; padding-left: 22px; display: inherit;'>
                     <i class='fa fa-check-circle fa-lg fa-pull-left' style="margin-top: 2px;"></i>Sertifikasi
                 </a>
+
                 @{
                     var httpContext = ViewContext.HttpContext;
                 }
@@ -123,7 +124,7 @@
                 @if (httpContext.Session.GetString("Role") == "Super Admin")
                 {
                 <a asp-controller="Pengguna" asp-action="Index" class='list-group-item list-group-item-action <%: Page.Title == "Laporan Kuesioner Excel" ? "polman-menu-active" : "" %>' style='border-radius: 0px; border: none; padding-left: 22px; display: inherit;'>
-                    <i class='fa fa-check-circle fa-lg fa-pull-left' style="margin-top: 2px;"></i>Pengguna
+                        <i class='fa fa-user fa-lg fa-pull-left' style="margin-top: 2px;"></i>Pengguna
                 </a>
                 }
 

@@ -1,0 +1,112 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@{
+    ViewData["Title"] = "Pengguna";
+}
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="control-label">Nama <span style="color: red;">*</span></label>
+                    <input class="form-control" name="nama" id="nama" />
+                    <span id="namaError" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Nama Pengguna <span style="color: red;">*</span></label>
+                    <input class="form-control" name="username" id="username" />
+                    <span id="namaPenggunaError" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Kata Sandi <span style="color: red;">*</span></label>
+                    <input class="form-control" name="password" id="password" type="password"/>
+                    <span id="passwordError" class="text-danger"></span>
+                </div>
+                <!-- Tambahkan input untuk role dengan nilai "Admin" -->
+                <input type="hidden" name="role" id="role" value="Admin" />
+                <br />
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" onclick="simpan()">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function simpan() {
+        var nama = document.getElementById("nama").value;
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+        var role = document.getElementById("role").value;
+        
+        var jwtToken = "@ViewBag.JwtToken";
+
+
+        // Periksa apakah Nama kosong
+        if (!nama.trim()) {
+            document.getElementById("namaError").innerText = 'Nama harus diisi.';
+            return;
+        }
+
+        // Periksa apakah Nama Pengguna kosong
+        if (!username.trim()) {
+            document.getElementById("namaPenggunaError").innerText = 'Nama Pengguna harus diisi.';
+            return;
+        }
+
+        // Periksa apakah Nama Pengguna kosong
+        if (!password.trim()) {
+            document.getElementById("passwordError").innerText = 'Kata sandi Pengguna harus diisi.';
+            return;
+        }
+
+        // Clear the error message if validation passes
+
+        var hostname = "https://localhost:44303/";
+        var url = hostname + "TambahPengguna";
+        var method = "POST";
+
+        var input = {
+            nama: nama,
+            username: username,
+            password: password,
+            role: role,
+            status: "Aktif",
+        };
+
+        var data = JSON.stringify(input);
+
+        $.ajax({
+            url: url,
+            method: method,
+            data: data,
+            headers: {
+                'Authorization': 'Bearer ' + jwtToken
+            },
+            contentType: "application/json",
+            success: function (data) {
+                // Menampilkan SweetAlert setelah data berhasil disimpan
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'Data berhasil ditambahkan!',
+                }).then((result) => {
+                    // Redirect ke halaman Index setelah menekan OK di SweetAlert
+                    if (result.isConfirmed) {
+                        window.location.href = "/Prodi/Index";
+                    }
+                });
+            },
+            error: function (error) {
+                console.error('Error:', error);
+                // Tambahkan penanganan kesalahan jika diperlukan
+            }
+        });
+    }
+</script>
